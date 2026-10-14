@@ -1,510 +1,365 @@
-<!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>AngebotsPilot AI 14.0 – Full Business Cozy Suite</title>
-  <style>
-    :root{
-      --bg:#f5f0e8;
-      --bg-soft:#fbf8f4;
-      --card:#ffffff;
-      --card-soft:#f8f4ee;
-      --line:#e6ddd0;
-      --text:#1f2430;
-      --muted:#696a6f;
-      --green:#285a40;
-      --green-2:#356c4f;
-      --gold:#b58a4f;
-      --gold-soft:#efe4d4;
-      --blue:#3e75ff;
-      --blue-soft:#eaf0ff;
-      --purple:#8667ff;
-      --purple-soft:#f0ebff;
-      --orange:#dd8a31;
-      --orange-soft:#fff0df;
-      --pink:#d86ca1;
-      --pink-soft:#ffeaf4;
-      --teal:#3f96a0;
-      --teal-soft:#e7f6f7;
-      --shadow:0 12px 40px rgba(64,38,7,.08);
-      --radius:24px;
-    }
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{margin:0;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--text);background:linear-gradient(180deg,#f3eee6,#f7f3ed 26%,#f4efe8);}
-    a{text-decoration:none;color:inherit}
-    .shell{max-width:1380px;margin:0 auto;padding:18px 16px 60px}
-    .topbar{background:rgba(255,255,255,.8);backdrop-filter:blur(16px);border:1px solid rgba(230,221,208,.9);border-radius:24px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:12px;z-index:20;box-shadow:var(--shadow)}
-    .brand{display:flex;align-items:center;gap:14px}
-    .brand-mark{width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,var(--gold),#d4ab6e);display:grid;place-items:center;color:#fff;font-size:24px;box-shadow:0 10px 20px rgba(181,138,79,.25)}
-    .brand h1{margin:0;font-size:20px;line-height:1.05;letter-spacing:-.03em}
-    .brand small{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.14em;font-weight:700;margin-top:4px}
-    .nav{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-    .nav-btn,.ghost-btn,.primary-btn,.chip-btn{border:none;font:inherit;cursor:pointer;border-radius:16px;padding:13px 18px;font-weight:700;transition:.2s ease all}
-    .nav-btn{background:#fff;border:1px solid var(--line);color:#252525;box-shadow:0 2px 0 rgba(0,0,0,.02)}
-    .nav-btn.active,.nav-btn:hover{background:var(--card-soft);border-color:#ddd0be;transform:translateY(-1px)}
-    .hero{margin-top:18px;background:var(--card);border:1px solid var(--line);border-radius:36px;overflow:hidden;display:grid;grid-template-columns:1.05fr .95fr;box-shadow:var(--shadow)}
-    .hero-copy{padding:44px 42px 38px}
-    .eyebrow{display:inline-flex;align-items:center;gap:8px;background:#edf3ff;border:1px solid #dde7ff;color:#4f6fb8;padding:9px 14px;border-radius:999px;font-size:12px;text-transform:uppercase;letter-spacing:.14em;font-weight:800;margin-bottom:18px}
-    .hero-copy h2{font-family:Georgia,"Times New Roman",serif;font-size:clamp(44px,5vw,72px);line-height:.93;letter-spacing:-.05em;margin:0 0 16px;color:#121823}
-    .hero-copy h2 span{color:var(--gold)}
-    .hero-copy p{font-size:17px;line-height:1.7;color:#4d5056;max-width:650px;margin:0 0 24px}
-    .cta-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px}
-    .primary-btn{background:var(--green);color:#fff;box-shadow:0 8px 20px rgba(40,90,64,.18)}
-    .primary-btn:hover{background:var(--green-2);transform:translateY(-1px)}
-    .ghost-btn{background:#fff;border:1px solid #d8d0c2;color:#1e2430}
-    .ghost-btn:hover,.chip-btn:hover{background:#faf6ef}
-    .trust-row{display:flex;gap:24px;flex-wrap:wrap;color:#535960;font-size:14px;margin-top:6px}
-    .trust-row span:before{content:"✓";color:var(--green);font-weight:900;margin-right:8px}
-    .note{margin-top:22px;background:var(--gold-soft);border:1px solid #e7d5bb;color:#7d5a27;padding:16px 18px;border-radius:18px;font-size:14px}
-    .hero-visual{position:relative;min-height:100%;padding:28px;background:linear-gradient(180deg,rgba(247,243,236,.85),rgba(241,235,226,.95));display:flex;align-items:flex-end;justify-content:center}
-    .hero-bg{position:absolute;inset:0;background:radial-gradient(circle at 22% 18%, rgba(255,255,255,.95), transparent 26%), radial-gradient(circle at 72% 12%, rgba(255,255,255,.85), transparent 20%), linear-gradient(180deg,rgba(252,249,244,.98),rgba(245,238,229,.98));}
-    .office-glow{position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(255,239,214,.55) 36%,rgba(249,243,234,.1) 80%), radial-gradient(circle at 78% 34%, rgba(131,146,92,.14), transparent 26%)}
-    .desk{position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(180deg,#c99c64,#b27e4b 36%,#9d6d3f 100%)}
-    .laptop{position:relative;z-index:2;width:min(92%,680px);aspect-ratio:1.42/1;border-radius:24px;padding:16px;background:#1f2328;box-shadow:0 24px 60px rgba(0,0,0,.18)}
-    .screen{height:100%;border-radius:16px;background:#faf8f3;overflow:hidden;border:1px solid #d7d0c4}
-    .screen-top{height:38px;background:#fff;border-bottom:1px solid #ece6dc;display:flex;align-items:center;justify-content:space-between;padding:0 14px;font-size:12px;color:#777}
-    .screen-body{display:grid;grid-template-columns:170px 1fr;height:calc(100% - 38px)}
-    .screen-side{background:#f8f5ef;border-right:1px solid #ebe3d7;padding:12px}
-    .screen-side .slogo{font-weight:800;font-size:13px;margin-bottom:14px;color:#8d682e}
-    .snav-item{padding:8px 10px;border-radius:10px;font-size:12px;color:#565c66;margin:4px 0}
-    .snav-item.active{background:#efe6d8;color:#2a2b30;font-weight:700}
-    .screen-main{padding:14px}
-    .screen-main h3{margin:0 0 4px;font-size:28px;letter-spacing:-.04em}
-    .screen-main small{color:#767b83}
-    .metric-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:16px}
-    .metric{background:#fff;border:1px solid #ece3d9;border-radius:16px;padding:12px}
-    .metric b{display:block;font-size:28px;margin-top:6px}
-    .metric small{display:block;font-size:12px}
-    .split-panels{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
-    .panel-lite{background:#fff;border:1px solid #ece3d9;border-radius:16px;padding:12px;min-height:160px}
-    .list-row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px dashed #efe7dc;font-size:12px;color:#4b5057}
-    .list-row:last-child{border-bottom:none}
-    .status{border-radius:999px;padding:4px 8px;font-size:11px;font-weight:700}
-    .st-new{background:#ffe9ee;color:#cb557c}.st-draft{background:#efe8ff;color:#7551db}.st-send{background:#e8f0ff;color:#4472df}.st-ok{background:#e7f6eb;color:#2e8851}
-    .mug{position:absolute;right:18px;bottom:34px;z-index:2;width:110px;height:130px;border-radius:16px 16px 28px 28px;background:linear-gradient(180deg,#efe4d3,#e2d0b8);box-shadow:0 12px 24px rgba(0,0,0,.10);display:flex;align-items:center;justify-content:center;padding:10px;text-align:center;font-family:Georgia,serif;font-size:12px;color:#332315}
-    .mug:after{content:"";position:absolute;right:-18px;top:28px;width:26px;height:42px;border:5px solid #e2d0b8;border-left:none;border-radius:0 18px 18px 0}
-    .phone{position:absolute;left:28px;bottom:24px;z-index:2;width:118px;height:18px;border-radius:30px;background:#2e3136;box-shadow:0 10px 16px rgba(0,0,0,.12);transform:rotate(-10deg)}
-    .feature-bar,.footer-stats{display:grid;grid-template-columns:repeat(6,1fr);gap:18px;margin-top:18px}
-    .feature-card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:20px 18px;box-shadow:var(--shadow)}
-    .icon-badge{width:54px;height:54px;border-radius:18px;display:grid;place-items:center;font-size:22px;margin-bottom:14px;font-weight:700}
-    .feature-card b{display:block;font-size:18px;margin-bottom:4px}
-    .feature-card p{margin:0;color:var(--muted);font-size:14px;line-height:1.55}
-    .ib-blue{background:var(--blue-soft);color:var(--blue)}.ib-purple{background:var(--purple-soft);color:var(--purple)}.ib-green{background:#e8f6ea;color:#2f8d52}.ib-orange{background:var(--orange-soft);color:var(--orange)}.ib-pink{background:var(--pink-soft);color:var(--pink)}.ib-teal{background:var(--teal-soft);color:var(--teal)}
-    .layout{display:grid;grid-template-columns:1fr;gap:18px;margin-top:18px}
-    .section{display:none}
-    .section.active{display:block}
-    .content-wrap{display:grid;grid-template-columns:320px 1fr;gap:18px}
-    .sidebar-card,.content-card{background:#fff;border:1px solid var(--line);border-radius:28px;box-shadow:var(--shadow)}
-    .sidebar-card{padding:22px}
-    .content-card{padding:24px}
-    .profile-pill{display:flex;align-items:center;gap:12px;background:var(--card-soft);padding:12px;border-radius:18px;border:1px solid #eadfce;margin-bottom:18px}
-    .avatar{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#d7c4a6,#b38651);display:grid;place-items:center;color:#fff;font-weight:800}
-    .side-links{display:grid;gap:10px}
-    .side-link{padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:#fff;font-weight:700;color:#323743;cursor:pointer;text-align:left}
-    .side-link.active,.side-link:hover{background:#fbf7f1}
-    .section-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:18px}
-    .section-head h3{margin:0;font-family:Georgia,"Times New Roman",serif;font-size:40px;line-height:1;letter-spacing:-.04em}
-    .section-head p{margin:8px 0 0;color:var(--muted);max-width:720px;line-height:1.7}
-    .summary-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
-    .summary-card{background:#fcfaf7;border:1px solid #ece3d7;border-radius:20px;padding:18px}
-    .summary-card small{color:#7a7e86}.summary-card b{display:block;font-size:34px;margin:10px 0 4px}
-    .two-col{display:grid;grid-template-columns:1.15fr .85fr;gap:16px}
-    .table-card,.mini-card{background:#fcfaf7;border:1px solid #ece3d7;border-radius:22px;padding:18px}
-    table{width:100%;border-collapse:collapse}
-    th,td{padding:12px 10px;text-align:left;border-bottom:1px solid #eee5d8;font-size:14px}
-    th{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#80828a}
-    tr:last-child td{border-bottom:none}
-    .stack{display:grid;gap:12px}
-    .todo{display:flex;justify-content:space-between;gap:14px;align-items:center;background:#fff;border:1px solid #ece3d7;padding:14px 15px;border-radius:16px}
-    .todo p{margin:0;color:#6f737a;font-size:14px}
-    .todo strong{display:block;margin-bottom:4px}
-    .badge{padding:6px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#f1ece4;color:#614e32;white-space:nowrap}
-    .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-    .field,.full{display:grid;gap:8px}
-    .full{grid-column:1/-1}
-    label{font-size:13px;font-weight:700;color:#50545c}
-    input,select,textarea{width:100%;border:1px solid #ddd3c5;background:#fff;border-radius:16px;padding:14px 15px;font:inherit;color:#252a33;outline:none}
-    textarea{min-height:140px;resize:vertical}
-    input:focus,select:focus,textarea:focus{border-color:#c3ab87;box-shadow:0 0 0 4px rgba(181,138,79,.12)}
-    .form-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
-    .kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-    .kanban-col{background:#fcfaf7;border:1px solid #ece3d7;border-radius:22px;padding:14px}
-    .kanban-col h4{margin:0 0 12px;font-size:16px}
-    .card-mini{background:#fff;border:1px solid #ece3d7;border-radius:16px;padding:14px;margin-top:12px}
-    .card-mini strong{display:block;margin-bottom:6px}
-    .service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-    .service{background:#fcfaf7;border:1px solid #ece3d7;border-radius:22px;padding:18px}
-    .service h4{margin:0 0 8px}.service p{margin:0 0 10px;color:var(--muted);font-size:14px;line-height:1.6}
-    .price{display:inline-block;padding:8px 12px;border-radius:12px;background:#fff;border:1px solid #e7ded1;font-weight:800;color:#6a5430}
-    .company-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-    .info-box{background:#fcfaf7;border:1px solid #ece3d7;border-radius:22px;padding:18px}
-    .info-box h4{margin:0 0 10px;font-size:20px}
-    .stats-line{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
-    .footer-stats .feature-card{padding:22px}
-    .quote{display:flex;gap:16px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:26px;padding:20px;box-shadow:var(--shadow)}
-    .quote .avatar{width:64px;height:64px;border-radius:50%}
-    .subtle{color:var(--muted)}
-    footer{padding:26px 10px 10px;color:#7a7b80;font-size:13px;text-align:center}
-    @media (max-width:1150px){
-      .hero{grid-template-columns:1fr}.feature-bar,.footer-stats,.summary-grid,.metric-row,.service-grid,.stats-line{grid-template-columns:repeat(2,1fr)}
-      .content-wrap,.two-col,.company-grid,.screen-body,.split-panels,.kanban{grid-template-columns:1fr}
-      .screen-side{display:none}.screen-main{padding:18px}
-    }
-    @media (max-width:720px){
-      .shell{padding:12px 12px 40px}.topbar{padding:14px;position:static}.nav{width:100%}.nav-btn,.ghost-btn,.primary-btn,.chip-btn{padding:12px 14px}
-      .hero-copy{padding:24px}.hero-copy h2{font-size:42px}.hero-visual{min-height:420px;padding:14px}.mug{display:none}
-      .feature-bar,.footer-stats,.summary-grid,.service-grid,.stats-line,.metric-row,.form-grid,.kanban{grid-template-columns:1fr}.content-wrap{grid-template-columns:1fr}.section-head h3{font-size:30px}
-      .hero .laptop{width:100%}.brand h1{font-size:18px}
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AngebotsPilot AI 20 – Business Autopilot</title>
+<meta name="description" content="AngebotsPilot AI verbindet Anfragen, Angebote, Aufträge, E-Mails, Lagerbestand, Preislisten und Automationen.">
+<style>
+:root{
+  --bg:#f6f1e9; --paper:#fffdf9; --ink:#1c2521; --muted:#69706b; --line:#e7dfd4;
+  --green:#1f5a42; --green2:#2d6a50; --green-soft:#eaf3ed; --gold:#b68a4d; --gold-soft:#f2e7d8;
+  --red:#a64e54; --red-soft:#fae9ea; --amber:#9a6b24; --amber-soft:#fff4dc; --blue:#466fba; --blue-soft:#eaf0fb;
+  --shadow:0 18px 50px rgba(59,43,20,.09); --r:28px;
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:
+radial-gradient(circle at 12% 4%,rgba(182,138,77,.09),transparent 24%),
+radial-gradient(circle at 92% 14%,rgba(31,90,66,.08),transparent 23%),
+linear-gradient(180deg,#f7f2ea,#fbf8f3 38%,#f5efe7);color:var(--ink)}
+button,input,textarea,select{font:inherit}.wrap{max-width:1440px;margin:auto;padding:18px 16px 60px}
+.topbar{position:sticky;top:10px;z-index:40;display:flex;align-items:center;justify-content:space-between;gap:16px;background:rgba(255,253,249,.93);backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:22px;padding:12px 16px;box-shadow:var(--shadow)}
+.brand{display:flex;align-items:center;gap:12px}.logo{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,var(--gold),#d0aa74);color:white;font-weight:900;font-size:21px;box-shadow:0 10px 24px rgba(182,138,77,.22)}
+.brand b{font-size:21px;letter-spacing:-.03em}.brand small{display:block;margin-top:2px;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.14em;font-weight:750}
+.btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:12px 17px;border-radius:14px;font-weight:800;cursor:pointer;transition:.18s ease}
+.btn:hover{transform:translateY(-1px);background:#faf6ef}.btn.primary{background:var(--green);border-color:var(--green);color:white;box-shadow:0 10px 25px rgba(31,90,66,.18)}.btn.primary:hover{background:var(--green2)}
+.btn.warn{background:var(--amber-soft);border-color:#efd9ae;color:#7a571f}.btn.danger{background:#fff7f7;border-color:#eccfd2;color:#99464e}
+.hero{margin-top:18px;background:linear-gradient(135deg,#fffdf9 0%,#faf6ef 60%,#f3eadc 100%);border:1px solid var(--line);border-radius:34px;box-shadow:var(--shadow);padding:58px 54px 48px;position:relative;overflow:hidden}
+.hero:before,.hero:after{content:"";position:absolute;border-radius:50%;pointer-events:none}.hero:before{width:420px;height:420px;right:-120px;top:-110px;background:radial-gradient(circle,rgba(31,90,66,.12),rgba(31,90,66,0) 70%)}.hero:after{width:340px;height:340px;left:-130px;bottom:-150px;background:radial-gradient(circle,rgba(182,138,77,.14),rgba(182,138,77,0) 70%)}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:999px;background:var(--green-soft);color:#3e6f58;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:850;margin-bottom:18px}
+.hero h1{position:relative;z-index:1;max-width:1100px;font-family:Georgia,"Times New Roman",serif;font-size:clamp(50px,7vw,94px);line-height:.92;letter-spacing:-.055em;margin:0 0 24px}.hero h1 span{color:var(--gold)}
+.hero p{position:relative;z-index:1;max-width:820px;color:#4f5752;font-size:19px;line-height:1.7;margin:0 0 28px}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;position:relative;z-index:1}.trustline{display:flex;gap:22px;flex-wrap:wrap;margin-top:20px;color:#5c625e;font-size:14px;position:relative;z-index:1}.trustline span:before{content:"✓";color:var(--green);font-weight:900;margin-right:7px}
+.hero-proof{margin-top:34px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;position:relative;z-index:1}.proof{background:rgba(255,255,255,.72);border:1px solid rgba(231,223,212,.95);border-radius:18px;padding:18px}.proof b{display:block;font-size:27px;margin-bottom:4px}.proof small{color:var(--muted)}
+.section{margin-top:20px;background:var(--paper);border:1px solid var(--line);border-radius:30px;padding:34px;box-shadow:var(--shadow)}.section.center{text-align:center}.section-head{max-width:900px;margin:0 auto 26px}.section-head h2{font-family:Georgia,"Times New Roman",serif;font-size:48px;line-height:1;letter-spacing:-.04em;margin:0 0 12px}.section-head p{color:var(--muted);font-size:17px;line-height:1.7;margin:0}
+.grid3,.grid4,.workflow,.roles{display:grid;gap:15px}.grid3{grid-template-columns:repeat(3,1fr)}.grid4{grid-template-columns:repeat(4,1fr)}.workflow{grid-template-columns:repeat(5,1fr)}.roles{grid-template-columns:repeat(3,1fr)}
+.card,.step,.role{background:#fbf8f3;border:1px solid var(--line);border-radius:22px;padding:22px}.card h3,.role h3,.step h3{margin:0 0 8px}.card p,.role p,.step p{color:var(--muted);line-height:1.58;font-size:14px;margin:0}
+.step-num{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--green);color:#fff;font-weight:900;margin-bottom:14px}
+.cta-panel{background:linear-gradient(135deg,var(--green),#2c654c);color:#fff;border-radius:30px;padding:36px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}.cta-panel h2{font-family:Georgia,serif;font-size:45px;letter-spacing:-.04em;margin:0 0 8px}.cta-panel p{margin:0;color:rgba(255,255,255,.78);max-width:800px;line-height:1.65}.cta-panel .btn{background:#fff;border:none;color:var(--green)}
+footer{text-align:center;padding:28px 10px 8px;color:#7a7d79;font-size:13px}
+
+/* App */
+.app{display:none;margin-top:18px}.app.show{display:block}.app-shell{display:grid;grid-template-columns:290px 1fr;gap:16px}
+.sidebar,.panel{background:#fff;border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow)}.sidebar{padding:18px}.panel{padding:24px}
+.userbox{background:#f8f4ee;border:1px solid var(--line);border-radius:17px;padding:13px;margin-bottom:14px}.userbox b{display:block}.userbox small{color:var(--muted)}
+.sidebtn{width:100%;border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px 13px;text-align:left;font-weight:750;color:#333;cursor:pointer;margin-top:8px}.sidebtn:hover,.sidebtn.on{background:#f8f3eb}
+.view.hidden,.hidden{display:none!important}.head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}.head h2{font-family:Georgia,serif;font-size:38px;letter-spacing:-.04em;margin:0}.head p{color:var(--muted);line-height:1.65;max-width:760px;margin:7px 0 0}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{background:#fbf8f3;border:1px solid var(--line);border-radius:18px;padding:16px}.stat small{color:var(--muted)}.stat b{display:block;font-size:30px;margin-top:7px}
+.two{display:grid;grid-template-columns:1.1fr .9fr;gap:14px;margin-top:14px}.box{background:#fbf8f3;border:1px solid var(--line);border-radius:20px;padding:17px}
+table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1px solid #ebe3d8;text-align:left;font-size:13px}th{color:#747a75;font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.badge{display:inline-block;border-radius:999px;padding:5px 8px;background:var(--green-soft);color:#2c6649;font-size:11px;font-weight:750}.badge.amber{background:var(--amber-soft);color:#7a571f}.badge.red{background:var(--red-soft);color:#93434a}.badge.blue{background:var(--blue-soft);color:#4265a8}
+.log{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid #ebe3d8}.log:last-child{border-bottom:none}.log small{color:var(--muted)}
+.connection-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.connection{background:#fbf8f3;border:1px solid var(--line);border-radius:20px;padding:18px}.connection h3{margin:0 0 5px}.connection p{color:var(--muted);font-size:13px;line-height:1.55;margin:0 0 12px}.connection .status{display:flex;align-items:center;justify-content:space-between;gap:10px}.dot{width:9px;height:9px;border-radius:50%;background:#aeb6b0;display:inline-block;margin-right:6px}.dot.on{background:#44a66c}
+.formgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.field{display:grid;gap:7px}.full{grid-column:1/-1}label{font-size:12px;font-weight:800;color:#585e59}input,textarea,select{width:100%;border:1px solid #ded4c8;border-radius:14px;padding:13px 14px;outline:none;background:#fff}textarea{min-height:130px;resize:vertical}input:focus,textarea:focus,select:focus{border-color:#b99970;box-shadow:0 0 0 4px rgba(178,135,79,.11)}
+.rule-list{display:grid;gap:12px}.rule{background:#fbf8f3;border:1px solid var(--line);border-radius:20px;padding:16px;display:grid;grid-template-columns:110px 1fr auto;gap:14px;align-items:center}.traffic{font-weight:900;text-transform:uppercase;letter-spacing:.08em;font-size:11px}.traffic.green{color:#267149}.traffic.yellow{color:#91651e}.traffic.red{color:#94454b}
+.switch{position:relative;width:48px;height:28px;background:#d7dcd8;border-radius:999px;cursor:pointer}.switch.on{background:#77a98b}.switch:after{content:"";position:absolute;width:22px;height:22px;border-radius:50%;top:3px;left:3px;background:#fff;transition:.18s;box-shadow:0 2px 6px rgba(0,0,0,.16)}.switch.on:after{left:23px}
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;align-items:stretch}.flowstep{background:#fbf8f3;border:1px solid var(--line);border-radius:18px;padding:14px}.flowstep b{display:block;margin-bottom:5px}.flowstep p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+.email-preview{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;white-space:pre-wrap;line-height:1.65;color:#4c524e;min-height:210px}
+.activity-card{background:#fbf8f3;border:1px solid var(--line);border-radius:18px;padding:14px;margin-top:10px}.activity-card b{display:block;margin-bottom:4px}.activity-card small{color:var(--muted)}
+.login-overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(24,24,21,.35);backdrop-filter:blur(10px);align-items:center;justify-content:center;padding:18px}.login-overlay.show{display:flex}
+.login-card{width:min(470px,100%);background:#fff;border:1px solid var(--line);border-radius:28px;padding:26px;box-shadow:0 30px 90px rgba(0,0,0,.22)}.login-card h2{font-family:Georgia,serif;font-size:36px;margin:0 0 8px}.login-card p{color:var(--muted);line-height:1.6;margin:0 0 16px}.notice{margin-top:14px;background:#fff7e8;border:1px solid #ecdab9;border-radius:14px;padding:12px;color:#805f2c;font-size:12px;line-height:1.5}
+@media(max-width:1120px){.hero-proof,.grid4,.workflow,.roles,.stats,.connection-grid,.flow{grid-template-columns:repeat(2,1fr)}.app-shell,.two{grid-template-columns:1fr}.sidebar{display:none}}
+@media(max-width:700px){.wrap{padding:10px 10px 40px}.topbar{position:static}.hero{padding:34px 24px}.hero h1{font-size:48px}.hero p{font-size:16px}.hero-proof,.grid3,.grid4,.workflow,.roles,.stats,.connection-grid,.flow,.formgrid{grid-template-columns:1fr}.section{padding:24px 18px}.section-head h2,.cta-panel h2{font-size:36px}.rule{grid-template-columns:1fr}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <div class="shell">
-    <div class="topbar">
-      <div class="brand">
-        <div class="brand-mark">↗</div>
-        <div>
-          <h1>AngebotsPilot AI</h1>
-          <small>Version 14 · Full Business Cozy Suite</small>
+<div class="wrap">
+<header class="topbar">
+  <div class="brand"><div class="logo">A</div><div><b>AngebotsPilot AI</b><small>Business Autopilot</small></div></div>
+  <button id="loginOpen" class="btn">Anmelden</button>
+</header>
+
+<main id="publicSite">
+  <section class="hero">
+    <div class="eyebrow">Für Unternehmen, die wiederkehrende Büroarbeit automatisieren wollen</div>
+    <h1>Deine Geschäftsdaten.<br>Deine Regeln.<br><span>Dein KI‑Autopilot.</span></h1>
+    <p>AngebotsPilot verbindet E-Mail, Website, Lagerbestand, Preislisten, Lieferanteninformationen und interne Daten. Die KI versteht eingehende Anfragen, prüft relevante Informationen und kann Standardfälle selbstständig beantworten – nach Regeln, die dein Unternehmen festlegt.</p>
+    <div class="hero-actions">
+      <button id="heroLogin" class="btn primary">Jetzt anmelden</button>
+      <button class="btn" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">So funktioniert es</button>
+    </div>
+    <div class="trustline"><span>Branchenoffen</span><span>Rollen & Freigaben</span><span>Automationen nach Regeln</span><span>Datenquellen verbinden</span></div>
+    <div class="hero-proof">
+      <div class="proof"><b>E-Mails verstehen</b><small>Anfragen automatisch einordnen und beantworten.</small></div>
+      <div class="proof"><b>Bestände prüfen</b><small>Lagerinformationen in Antworten und Angebote einbeziehen.</small></div>
+      <div class="proof"><b>Preise verwenden</b><small>Eigene Kataloge und Regeln als Grundlage nutzen.</small></div>
+      <div class="proof"><b>Nachfassen</b><small>Offene Angebote und Vorgänge automatisch verfolgen.</small></div>
+    </div>
+  </section>
+
+  <section id="how" class="section">
+    <div class="section-head">
+      <div class="eyebrow">Der Grundablauf</div>
+      <h2>Eine Anfrage kommt rein. AngebotsPilot erledigt den Rest.</h2>
+      <p>Der Autopilot verbindet Informationen aus mehreren Quellen und entscheidet anhand deiner Regeln, ob er selbst antworten darf oder eine Freigabe benötigt.</p>
+    </div>
+    <div class="workflow">
+      <article class="step"><div class="step-num">1</div><h3>E-Mail kommt an</h3><p>Die Nachricht wird automatisch analysiert: Wer fragt was an und welche Informationen werden benötigt?</p></article>
+      <article class="step"><div class="step-num">2</div><h3>Daten prüfen</h3><p>Website, Lagerbestand, Preislisten oder interne Systeme liefern passende Informationen.</p></article>
+      <article class="step"><div class="step-num">3</div><h3>Regeln anwenden</h3><p>Der Autopilot prüft: Standardfall, Freigabe nötig oder immer menschliche Bearbeitung?</p></article>
+      <article class="step"><div class="step-num">4</div><h3>Antwort formulieren</h3><p>Eine professionelle E-Mail oder ein Angebotsentwurf wird aus den geprüften Daten erstellt.</p></article>
+      <article class="step"><div class="step-num">5</div><h3>Versenden & dokumentieren</h3><p>Freigegebene Standardfälle werden versendet und als Aktivität protokolliert.</p></article>
+    </div>
+  </section>
+
+  <section class="section center">
+    <div class="section-head"><div class="eyebrow">Mehr als nur Angebote</div><h2>Ein KI‑Backoffice für wiederkehrende Arbeit.</h2><p>Das System soll nicht nur schreiben, sondern Informationen finden, Regeln beachten und komplette Abläufe unterstützen.</p></div>
+    <div class="grid3">
+      <article class="card"><h3>E-Mail-Autopilot</h3><p>Kunden- und Lieferantenmails verstehen, kategorisieren, beantworten oder zur Freigabe vorbereiten.</p></article>
+      <article class="card"><h3>Bestands-Autopilot</h3><p>Verfügbarkeit aus verbundenen Lager- oder Warenwirtschaftsdaten prüfen.</p></article>
+      <article class="card"><h3>Angebots-Autopilot</h3><p>Leistungen, Mengen und Preise zusammenführen und Angebote vorbereiten.</p></article>
+      <article class="card"><h3>Lieferanten-Autopilot</h3><p>Bei fehlendem Bestand alternative Lieferquellen oder Lieferzeiten berücksichtigen.</p></article>
+      <article class="card"><h3>Follow-up-Autopilot</h3><p>Offene Angebote und ausstehende Antworten erkennen und automatisch nachfassen.</p></article>
+      <article class="card"><h3>Rechnungs-Autopilot</h3><p>Nach bestätigter Leistung Rechnungsvorgänge vorbereiten und Zahlstatus verfolgen.</p></article>
+    </div>
+  </section>
+
+  <section class="section center">
+    <div class="section-head"><div class="eyebrow">Zugriffe</div><h2>Jeder Nutzer sieht nur seinen Bereich.</h2><p>Die öffentliche Website bleibt einfach. Interne Funktionen erscheinen erst nach dem Login und abhängig von der Rolle.</p></div>
+    <div class="roles">
+      <article class="role"><h3>Inhaber / Administrator</h3><p>Verbindungen, Automationen, Benutzer, Aktivitäten, Datenquellen, Kunden, Aufträge und Auswertungen.</p></article>
+      <article class="role"><h3>Mitarbeiter</h3><p>Nur die Module, die für die jeweilige Aufgabe freigegeben wurden.</p></article>
+      <article class="role"><h3>Kundenportal</h3><p>Nur die eigenen Angebote, Aufträge, Rechnungen und Nachrichten.</p></article>
+    </div>
+  </section>
+
+  <section class="section" style="padding:0;border:none;background:transparent;box-shadow:none">
+    <div class="cta-panel">
+      <div><h2>Wenn Standardarbeit automatisch läuft, bleibt mehr Zeit fürs Geschäft.</h2><p>Anmelden, Datenquellen verbinden, Regeln festlegen und anschließend Schritt für Schritt mehr Abläufe automatisieren.</p></div>
+      <button id="ctaLogin" class="btn">Jetzt anmelden</button>
+    </div>
+  </section>
+</main>
+
+<section id="app" class="app">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="userbox"><b id="who">owner@angebotspilot.demo</b><small id="roleLabel">Inhaber / Administrator</small></div>
+      <button class="sidebtn on" data-view="dashboard">Übersicht</button>
+      <button class="sidebtn" data-view="connections">Verbindungen</button>
+      <button class="sidebtn" data-view="automations">Automationen</button>
+      <button class="sidebtn" data-view="mailflow">E-Mail-Autopilot</button>
+      <button class="sidebtn" data-view="activity">Aktivitäten</button>
+      <button class="sidebtn" data-view="users">Benutzer & Rollen</button>
+      <button id="logout" class="sidebtn" style="margin-top:16px">Abmelden</button>
+    </aside>
+
+    <div class="panel">
+      <div id="dashboard" class="view">
+        <div class="head"><div><div class="eyebrow">Inhaberbereich</div><h2>Business Autopilot</h2><p>Überblick über verbundene Datenquellen, aktive Automationen und aktuelle Vorgänge.</p></div></div>
+        <div class="stats">
+          <div class="stat"><small>Verbindungen</small><b>5</b><span class="badge">2 aktiv</span></div>
+          <div class="stat"><small>Automationen</small><b>8</b><span class="badge">4 aktiv</span></div>
+          <div class="stat"><small>Automatische Antworten</small><b>27</b><span class="badge">diesen Monat</span></div>
+          <div class="stat"><small>Freigaben nötig</small><b>3</b><span class="badge amber">prüfen</span></div>
+        </div>
+        <div class="two">
+          <div class="box">
+            <h3>Aktueller Autopilot-Status</h3>
+            <div class="log"><div><b>Firmen-E-Mail</b><small>Automatische Eingangsprüfung</small></div><span class="badge">Aktiv</span></div>
+            <div class="log"><div><b>Website-Wissen</b><small>Produkt- und Leistungsinformationen</small></div><span class="badge">Aktiv</span></div>
+            <div class="log"><div><b>Lagerbestand</b><small>Noch nicht verbunden</small></div><span class="badge amber">Einrichten</span></div>
+            <div class="log"><div><b>Preisliste</b><small>Demo-Katalog hinterlegt</small></div><span class="badge blue">Test</span></div>
+          </div>
+          <div class="box">
+            <h3>Letzte Automationen</h3>
+            <div class="activity-card"><b>Anfrage automatisch beantwortet</b><small>Verfügbarkeit bestätigt · Kunde: Muster GmbH · vor 12 Minuten</small></div>
+            <div class="activity-card"><b>Freigabe angefordert</b><small>Angebot über 7.400 € · Rabatt angefragt · vor 31 Minuten</small></div>
+            <div class="activity-card"><b>Follow-up vorbereitet</b><small>Angebot seit 5 Tagen offen · vor 1 Stunde</small></div>
+          </div>
         </div>
       </div>
-      <div class="nav">
-        <button class="nav-btn active" data-target="start">Start</button>
-        <button class="nav-btn" data-target="dashboard">Dashboard</button>
-        <button class="nav-btn" data-target="anfrage">Anfrage</button>
-        <button class="nav-btn" data-target="vorgaenge">Vorgänge</button>
-        <button class="nav-btn" data-target="leistungen">Leistungen</button>
-        <button class="nav-btn" data-target="firma">Firma</button>
+
+      <div id="connections" class="view hidden">
+        <div class="head">
+          <div><div class="eyebrow">Datenquellen</div><h2>Verbindungen</h2><p>Hier hinterlegt eine Firma, wo AngebotsPilot Informationen finden darf. Die Demo simuliert die Einrichtung – echte Verbindungen benötigen sichere serverseitige Integrationen.</p></div>
+          <button class="btn primary">+ Verbindung hinzufügen</button>
+        </div>
+        <div class="connection-grid">
+          <article class="connection">
+            <h3>Firmen-E-Mail</h3><p>Gmail, Outlook oder ein anderer Anbieter. Eingehende Nachrichten können analysiert und nach Regeln beantwortet werden.</p>
+            <div class="status"><span><span class="dot on"></span> Demo verbunden</span><button class="btn">Verwalten</button></div>
+          </article>
+          <article class="connection">
+            <h3>Eigene Website</h3><p>Öffentliche Leistungs-, Produkt- und FAQ-Seiten als Wissensquelle hinterlegen.</p>
+            <div class="field"><label>Website-Adresse</label><input id="siteUrl" value="https://meinefirma.de"></div>
+            <div class="status" style="margin-top:10px"><span><span class="dot on"></span> Demo aktiv</span><button class="btn" id="saveSite">Speichern</button></div>
+          </article>
+          <article class="connection">
+            <h3>Lager / Warenwirtschaft</h3><p>Bestände, Artikelnummern und Verfügbarkeit für automatische Antworten verwenden.</p>
+            <div class="status"><span><span class="dot"></span> Nicht verbunden</span><button class="btn primary">Verbinden</button></div>
+          </article>
+          <article class="connection">
+            <h3>Lieferantenportal</h3><p>Lieferzeit oder Verfügbarkeit bei externen Lieferanten prüfen, wenn die Integration erlaubt ist.</p>
+            <div class="status"><span><span class="dot"></span> Nicht verbunden</span><button class="btn">Einrichten</button></div>
+          </article>
+          <article class="connection">
+            <h3>Preislisten & Kataloge</h3><p>Eigene Preise, Produkte, Leistungen und Konditionen als Grundlage für Angebote hinterlegen.</p>
+            <div class="status"><span><span class="dot on"></span> Demo-Katalog</span><button class="btn">Öffnen</button></div>
+          </article>
+          <article class="connection">
+            <h3>CRM / Kundendaten</h3><p>Kundenhistorie, Ansprechpartner und laufende Vorgänge an einem Ort zusammenführen.</p>
+            <div class="status"><span><span class="dot"></span> Nicht verbunden</span><button class="btn">Einrichten</button></div>
+          </article>
+        </div>
+
+        <div class="box" style="margin-top:16px">
+          <h3>Eigene Datenquelle hinzufügen</h3>
+          <div class="formgrid">
+            <div class="field"><label>Name</label><input placeholder="z. B. Ersatzteilportal"></div>
+            <div class="field"><label>Typ</label><select><option>Website / Portal</option><option>API</option><option>Datei / Preisliste</option><option>Datenbank</option></select></div>
+            <div class="full field"><label>Beschreibung</label><textarea placeholder="Welche Informationen soll AngebotsPilot hier finden?"></textarea></div>
+          </div>
+          <button class="btn primary" style="margin-top:12px">Quelle vormerken</button>
+        </div>
+      </div>
+
+      <div id="automations" class="view hidden">
+        <div class="head"><div><div class="eyebrow">Autopilot-Regeln</div><h2>Was darf die KI selbstständig erledigen?</h2><p>Automationen werden bewusst nach Risiko aufgeteilt. Standardfälle können automatisch laufen, wichtige Entscheidungen benötigen Freigabe.</p></div></div>
+        <div class="rule-list">
+          <div class="rule"><div class="traffic green">Grün</div><div><b>Verfügbarkeit beantworten</b><div style="color:var(--muted);font-size:13px">Wenn Bestand und Preis eindeutig sind, darf die KI selbst antworten.</div></div><div class="switch on"></div></div>
+          <div class="rule"><div class="traffic green">Grün</div><div><b>Öffnungszeiten & Produktinfos</b><div style="color:var(--muted);font-size:13px">Informationen aus freigegebenen Quellen automatisch versenden.</div></div><div class="switch on"></div></div>
+          <div class="rule"><div class="traffic green">Grün</div><div><b>Terminbestätigung</b><div style="color:var(--muted);font-size:13px">Bestehende Termine bestätigen und Standardinfos senden.</div></div><div class="switch on"></div></div>
+          <div class="rule"><div class="traffic yellow">Gelb</div><div><b>Angebote über 5.000 €</b><div style="color:var(--muted);font-size:13px">KI bereitet vor, Inhaber muss freigeben.</div></div><div class="switch on"></div></div>
+          <div class="rule"><div class="traffic yellow">Gelb</div><div><b>Sonderrabatte</b><div style="color:var(--muted);font-size:13px">Rabatte werden nie ohne Freigabe zugesagt.</div></div><div class="switch on"></div></div>
+          <div class="rule"><div class="traffic red">Rot</div><div><b>Rechtliche Beschwerden / Zahlungsstreit</b><div style="color:var(--muted);font-size:13px">Immer an einen Menschen weiterleiten.</div></div><div class="switch"></div></div>
+        </div>
+        <div class="box" style="margin-top:16px">
+          <h3>Eigene Regel</h3>
+          <div class="formgrid">
+            <div class="field"><label>Wenn …</label><input value="Anfrage nach Lagerbestand und Standardpreis"></div>
+            <div class="field"><label>Dann …</label><select><option>Automatisch antworten</option><option>Antwort vorbereiten + Freigabe</option><option>An Mitarbeiter weiterleiten</option></select></div>
+            <div class="full field"><label>Bedingung</label><textarea>Nur wenn Artikel eindeutig erkannt wurde, Bestand > angefragte Menge und keine Sonderkondition verlangt wird.</textarea></div>
+          </div>
+          <button class="btn primary" style="margin-top:12px">Regel speichern</button>
+        </div>
+      </div>
+
+      <div id="mailflow" class="view hidden">
+        <div class="head"><div><div class="eyebrow">E-Mail-Autopilot</div><h2>So verarbeitet die KI eine Firmenanfrage</h2><p>Diese Demo zeigt den Ablauf. In der echten Version kommen Nachricht, Datenprüfung und Versand aus verbundenen Systemen.</p></div></div>
+        <div class="flow">
+          <div class="flowstep"><b>1. Eingang</b><p>„Wir benötigen 25 Stück von Produkt X. Können Sie liefern?“</p></div>
+          <div class="flowstep"><b>2. Erkennen</b><p>Produkt X · Menge 25 · B2B-Anfrage · Lieferfähigkeit</p></div>
+          <div class="flowstep"><b>3. Daten prüfen</b><p>Lager: 31 Stück · Standardpreis: 42 € netto / Stück</p></div>
+          <div class="flowstep"><b>4. Regel</b><p>Standardpreis + Bestand ausreichend → automatische Antwort erlaubt</p></div>
+          <div class="flowstep"><b>5. Versand</b><p>Antwort wird erstellt, versendet und im Audit-Log dokumentiert.</p></div>
+        </div>
+
+        <div class="two">
+          <div class="box">
+            <h3>Beispielanfrage</h3>
+            <textarea id="incomingMail">Guten Tag, wir benötigen 25 Stück von Produkt X. Können Sie kurzfristig liefern und uns ein Angebot schicken?</textarea>
+            <button id="runAutopilot" class="btn primary" style="margin-top:12px">Autopilot simulieren</button>
+            <div id="decision" class="notice" style="display:none"></div>
+          </div>
+          <div class="box">
+            <h3>Automatische Antwort</h3>
+            <div id="autoReply" class="email-preview">Noch keine Simulation gestartet.</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+              <button class="btn primary" id="demoSend">Demo: Antwort senden</button>
+              <button class="btn">Zur Freigabe markieren</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="activity" class="view hidden">
+        <div class="head"><div><div class="eyebrow">Audit-Log</div><h2>Wer hat was gemacht?</h2><p>Automatische Aktionen und Benutzeraktionen werden nachvollziehbar protokolliert.</p></div></div>
+        <div id="activityList" class="box"></div>
+      </div>
+
+      <div id="users" class="view hidden">
+        <div class="head"><div><div class="eyebrow">Benutzer & Rollen</div><h2>Zugriffe verwalten</h2><p>Inhaber sieht alles. Mitarbeiter und Kunden erhalten nur die Module, die sie brauchen.</p></div><button class="btn primary">+ Benutzer einladen</button></div>
+        <table>
+          <thead><tr><th>E-Mail</th><th>Rolle</th><th>Zugriff</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>owner@angebotspilot.demo</td><td>Inhaber</td><td>Alle Module</td><td><span class="badge">Aktiv</span></td></tr>
+            <tr><td>verkauf@firma.demo</td><td>Vertrieb</td><td>Kunden, Angebote, E-Mails</td><td><span class="badge">Aktiv</span></td></tr>
+            <tr><td>lager@firma.demo</td><td>Lager</td><td>Bestand, Aufträge</td><td><span class="badge">Aktiv</span></td></tr>
+            <tr><td>kunde@firma.demo</td><td>Kunde</td><td>Eigenes Portal</td><td><span class="badge blue">Portal</span></td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
-
-    <main class="layout">
-      <section id="start" class="section active">
-        <div class="hero">
-          <div class="hero-copy">
-            <div class="eyebrow">Dein digitaler Büroassistent</div>
-            <h2>Mehr Aufträge.<br>Weniger Bürokratie.<br><span>Einfacher arbeiten.</span></h2>
-            <p>AngebotsPilot AI bringt Kundenanfragen, Angebote, Aufträge, Leistungen und Rechnungsentwürfe an einen Ort. Für Handwerk, Agenturen, Beratung, IT, Garten, Gebäudeservice, Event und viele weitere Dienstleistungsbetriebe.</p>
-            <div class="cta-row">
-              <button class="primary-btn" data-go="dashboard">Dashboard ansehen</button>
-              <button class="ghost-btn" data-go="anfrage">Anfrage testen</button>
-            </div>
-            <div class="trust-row">
-              <span>Für viele Branchen</span>
-              <span>Eigene Leistungen & Preise</span>
-              <span>KI als Assistenz, nicht als Spielerei</span>
-            </div>
-            <div class="note">Testversion: Bitte nur erfundene Daten verwenden. Noch kein rechtsgültiger Rechnungs- oder E‑Mail‑Versand.</div>
-          </div>
-          <div class="hero-visual">
-            <div class="hero-bg"></div>
-            <div class="office-glow"></div>
-            <div class="desk"></div>
-            <div class="phone"></div>
-            <div class="laptop">
-              <div class="screen">
-                <div class="screen-top"><span>● ● ●</span><span>Suche nach Kunden, Angeboten…</span><span>Max Mustermann</span></div>
-                <div class="screen-body">
-                  <div class="screen-side">
-                    <div class="slogo">AngebotsPilot AI</div>
-                    <div class="snav-item active">Dashboard</div>
-                    <div class="snav-item">Neue Anfrage</div>
-                    <div class="snav-item">Angebote</div>
-                    <div class="snav-item">Aufträge</div>
-                    <div class="snav-item">Rechnungen</div>
-                    <div class="snav-item">Kunden</div>
-                    <div class="snav-item">Berichte</div>
-                  </div>
-                  <div class="screen-main">
-                    <h3>Guten Morgen, Max!</h3>
-                    <small>Hier ist dein aktueller Überblick.</small>
-                    <div class="metric-row">
-                      <div class="metric"><small>Neue Anfragen</small><b>12</b><small style="color:#2f8d52">+20%</small></div>
-                      <div class="metric"><small>Angebote erstellt</small><b>8</b><small style="color:#2f8d52">+33%</small></div>
-                      <div class="metric"><small>Aufträge aktiv</small><b>5</b><small style="color:#2f8d52">+25%</small></div>
-                      <div class="metric"><small>Rechnungen offen</small><b>4</b><small style="color:#cb557c">-10%</small></div>
-                    </div>
-                    <div class="split-panels">
-                      <div class="panel-lite">
-                        <div class="list-row"><strong>Aktuelle Anfragen</strong><a href="#" class="subtle">Alle anzeigen</a></div>
-                        <div class="list-row"><span>Wohnungsrenovierung</span><span class="status st-new">Neu</span></div>
-                        <div class="list-row"><span>Badsanierung</span><span class="status st-send">Analyse läuft</span></div>
-                        <div class="list-row"><span>Gartenpflege</span><span class="status st-ok">Angebot erstellt</span></div>
-                      </div>
-                      <div class="panel-lite">
-                        <div class="list-row"><strong>Letzte Angebote</strong><a href="#" class="subtle">Alle anzeigen</a></div>
-                        <div class="list-row"><span>Küchensanierung</span><span class="status st-draft">Entwurf</span></div>
-                        <div class="list-row"><span>Büroausbau</span><span class="status st-send">Versendet</span></div>
-                        <div class="list-row"><span>Gartenpflege</span><span class="status st-ok">Angenommen</span></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="mug">Mehr Zeit<br>für das<br>Wesentliche.</div>
-          </div>
-        </div>
-
-        <div class="feature-bar">
-          <div class="feature-card"><div class="icon-badge ib-blue">⚙</div><b>KI‑Analyse</b><p>Versteht deine Anfragen und sortiert sie sinnvoll vor.</p></div>
-          <div class="feature-card"><div class="icon-badge ib-purple">✎</div><b>Angebote</b><p>Erstellt professionelle Entwürfe schneller und strukturierter.</p></div>
-          <div class="feature-card"><div class="icon-badge ib-green">✓</div><b>Aufträge</b><p>Von Zusage bis Leistung bleibt alles sauber organisiert.</p></div>
-          <div class="feature-card"><div class="icon-badge ib-orange">€</div><b>Rechnungen</b><p>Rechnungsentwürfe und offene Schritte an einem Ort.</p></div>
-          <div class="feature-card"><div class="icon-badge ib-pink">👥</div><b>Kunden</b><p>Kontakte, Anfragen und Angebote zusammen im Überblick.</p></div>
-          <div class="feature-card"><div class="icon-badge ib-teal">▣</div><b>Leistungskatalog</b><p>Eigene Leistungen und Preisarten individuell hinterlegen.</p></div>
-        </div>
-
-        <div class="content-card" style="margin-top:18px;">
-          <div class="section-head">
-            <div>
-              <div class="eyebrow" style="margin-bottom:12px">Für viele Branchen</div>
-              <h3>Ein System. Viele Möglichkeiten.</h3>
-              <p>Egal ob Handwerk, Agentur, Beratung oder Dienstleistung – AngebotsPilot AI passt sich deiner Branche an.</p>
-            </div>
-            <button class="ghost-btn" data-go="leistungen">Alle Leistungen ansehen</button>
-          </div>
-          <div class="service-grid">
-            <div class="service"><h4>Handwerk & Montage</h4><p>Von Sanierung bis Neubau – Angebote in Minuten vorbereiten.</p><span class="price">Abrechnung: Stunde · Pauschale</span></div>
-            <div class="service"><h4>Beratung & Coaching</h4><p>Professionelle Angebote für Beratungsleistungen, Pakete und Retainer.</p><span class="price">Abrechnung: Stunde · Paket</span></div>
-            <div class="service"><h4>Garten & Außenanlagen</h4><p>Anfragen, Angebote und Aufträge übersichtlich verwalten.</p><span class="price">Abrechnung: m² · Einsatz</span></div>
-            <div class="service"><h4>Gebäude & Reinigung</h4><p>Ob Innenausbau oder Facility Services – alles in einem System.</p><span class="price">Abrechnung: m² · Turnus</span></div>
-            <div class="service"><h4>IT & Web</h4><p>Von Website bis Wartung – Leistungen sauber strukturieren.</p><span class="price">Abrechnung: Stunde · Paket</span></div>
-            <div class="service"><h4>Event & Vermietung</h4><p>Pakete, Einzelpositionen und Zusatzleistungen einfach bündeln.</p><span class="price">Abrechnung: Paket · Stück</span></div>
-          </div>
-        </div>
-
-        <div class="footer-stats">
-          <div class="feature-card"><b style="font-family:Georgia,serif;font-size:52px;color:#6b4a1d">50+</b><p>Branchen</p></div>
-          <div class="feature-card"><b style="font-family:Georgia,serif;font-size:52px;color:#6b4a1d">3×</b><p>Schnellere Angebotserstellung</p></div>
-          <div class="feature-card"><b style="font-family:Georgia,serif;font-size:52px;color:#6b4a1d">100%</b><p>Flexibel anpassbar</p></div>
-          <div class="feature-card" style="grid-column:span 3;display:flex;align-items:center;gap:18px;">
-            <div class="avatar" style="border-radius:50%;width:72px;height:72px;">TW</div>
-            <div>
-              <b style="font-size:20px">„AngebotsPilot spart uns jede Woche mehrere Stunden.“</b>
-              <p style="margin:6px 0 0;color:var(--muted)">Unsere Angebote sind schneller, professioneller und wir bekommen deutlich mehr Aufträge.<br><strong>Thomas Weber</strong> · Inhaber, Weber Dienstleistungen</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="dashboard" class="section">
-        <div class="content-wrap">
-          <aside class="sidebar-card">
-            <div class="profile-pill">
-              <div class="avatar">AP</div>
-              <div>
-                <strong>Mein Unternehmen</strong><br><span class="subtle">Dienstleistung & Handwerk</span>
-              </div>
-            </div>
-            <div class="side-links">
-              <button class="side-link active" data-target="dashboard">Übersicht</button>
-              <button class="side-link" data-target="anfrage">Neue Anfrage</button>
-              <button class="side-link" data-target="vorgaenge">Vorgänge</button>
-              <button class="side-link" data-target="leistungen">Leistungskatalog</button>
-              <button class="side-link" data-target="firma">Firma & Einstellungen</button>
-              <button class="side-link" data-target="start">Zur Startseite</button>
-            </div>
-          </aside>
-          <div class="content-card">
-            <div class="section-head">
-              <div>
-                <div class="eyebrow" style="margin-bottom:10px">Dashboard</div>
-                <h3>Dein Überblick</h3>
-                <p>Alle wichtigen Zahlen, offenen Anfragen und nächsten Schritte in einem ruhigen, geschäftlichen Layout.</p>
-              </div>
-              <button class="primary-btn" data-go="anfrage">Neue Anfrage</button>
-            </div>
-            <div class="summary-grid">
-              <div class="summary-card"><small>Neue Anfragen</small><b>12</b><small>+20% seit diesem Monat</small></div>
-              <div class="summary-card"><small>Erstellte Angebote</small><b>8</b><small>+33% seit diesem Monat</small></div>
-              <div class="summary-card"><small>Aktive Aufträge</small><b>5</b><small>+25% seit diesem Monat</small></div>
-              <div class="summary-card"><small>Rechnungen</small><b>4</b><small>1 Zahlung überfällig</small></div>
-            </div>
-            <div class="two-col">
-              <div class="table-card">
-                <div class="section-head" style="margin-bottom:10px"><div><h3 style="font-size:26px;font-family:inherit">Letzte Anfragen</h3></div><a href="#" class="subtle">Alle anzeigen</a></div>
-                <table>
-                  <thead><tr><th>Kunde</th><th>Leistung</th><th>Status</th><th>Datum</th></tr></thead>
-                  <tbody>
-                    <tr><td>Schmidt GmbH</td><td>Website-Relaunch</td><td><span class="status st-new">Neu</span></td><td>Heute, 10:24</td></tr>
-                    <tr><td>Familie Schmid</td><td>Badsanierung</td><td><span class="status st-send">Analyse läuft</span></td><td>Gestern, 16:12</td></tr>
-                    <tr><td>Krause Immobilien</td><td>Gartenpflege</td><td><span class="status st-ok">Angebot erstellt</span></td><td>12.04.2025</td></tr>
-                    <tr><td>Muster AG</td><td>Facility Service</td><td><span class="status st-draft">Rückfrage offen</span></td><td>11.04.2025</td></tr>
-                  </tbody>
-                </table>
-              </div>
-              <div class="mini-card">
-                <div class="section-head" style="margin-bottom:10px"><div><h3 style="font-size:26px;font-family:inherit">Heute wichtig</h3></div></div>
-                <div class="stack">
-                  <div class="todo"><div><strong>2 Angebote prüfen</strong><p>Küchensanierung und Eventpaket liegen als Entwurf vor.</p></div><span class="badge">Heute</span></div>
-                  <div class="todo"><div><strong>1 Rechnung freigeben</strong><p>Rechnungsentwurf für Weber Dienstleistungen.</p></div><span class="badge">Offen</span></div>
-                  <div class="todo"><div><strong>3 Rückfragen senden</strong><p>Bei unvollständigen Anfragen fehlen noch Leistungsdetails.</p></div><span class="badge">Wichtig</span></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="anfrage" class="section">
-        <div class="content-wrap">
-          <aside class="sidebar-card">
-            <div class="profile-pill"><div class="avatar">AI</div><div><strong>Neue Anfrage</strong><br><span class="subtle">Schnell vorbereiten</span></div></div>
-            <p class="subtle">Hier kann eine Kundenanfrage in natürlicher Sprache eingefügt werden. Das Layout bleibt bewusst ruhig und seriös.</p>
-            <div class="side-links">
-              <button class="side-link active" data-target="anfrage">Anfrage erfassen</button>
-              <button class="side-link" data-target="dashboard">Zur Übersicht</button>
-              <button class="side-link" data-target="vorgaenge">Vorgänge ansehen</button>
-            </div>
-          </aside>
-          <div class="content-card">
-            <div class="section-head">
-              <div>
-                <div class="eyebrow" style="margin-bottom:10px">Anfrage</div>
-                <h3>Neue Kundenanfrage</h3>
-                <p>Die KI hilft beim Vorsortieren. Sie erkennt Leistung, Menge, offene Punkte und bereitet den nächsten Schritt vor – ohne aufdringlich „nach KI“ auszusehen.</p>
-              </div>
-              <button class="ghost-btn">Beispiel laden</button>
-            </div>
-            <div class="form-grid">
-              <div class="field"><label>Kunde</label><input value="Müller GmbH"></div>
-              <div class="field"><label>Branche</label><select><option>Handwerk & Montage</option><option>Beratung & Coaching</option><option>IT & Web</option></select></div>
-              <div class="field"><label>Ansprechpartner</label><input value="Max Müller"></div>
-              <div class="field"><label>E-Mail</label><input value="info@mueller-gmbh.de"></div>
-              <div class="full"><label>Kundenanfrage</label><textarea>Guten Tag, wir möchten unser Büro modernisieren und benötigen ein Angebot für die Renovierung von zwei Besprechungsräumen und einem Empfangsbereich. Können Sie uns dafür ein unverbindliches Angebot schicken?</textarea></div>
-              <div class="field"><label>Vorgeschlagene Leistung</label><input value="Innenausbau / Renovierung"></div>
-              <div class="field"><label>Status</label><input value="Wird analysiert"></div>
-            </div>
-            <div class="form-actions">
-              <button class="primary-btn">Mit KI voranalysieren</button>
-              <button class="ghost-btn">Als Vorgang speichern</button>
-            </div>
-            <div class="two-col" style="margin-top:18px">
-              <div class="mini-card"><h4 style="margin:0 0 10px">Erkannte Angaben</h4><div class="stack"><div class="todo"><div><strong>Dienstleistung</strong><p>Innenausbau / Renovierung</p></div></div><div class="todo"><div><strong>Ort / Bereich</strong><p>2 Besprechungsräume, 1 Empfangsbereich</p></div></div><div class="todo"><div><strong>Nächster Schritt</strong><p>Leistungen aus dem Katalog zuordnen und Angebot vorbereiten.</p></div></div></div></div>
-              <div class="mini-card"><h4 style="margin:0 0 10px">Offene Punkte</h4><div class="stack"><div class="todo"><div><strong>Maße fehlen</strong><p>Quadratmeter oder Umfang der Renovierung</p></div><span class="badge">Rückfrage</span></div><div class="todo"><div><strong>Zeitrahmen</strong><p>Gewünschter Starttermin und Fertigstellung</p></div><span class="badge">Rückfrage</span></div><div class="todo"><div><strong>Budget / Material</strong><p>Soll Material mitkalkuliert werden?</p></div><span class="badge">Klärung</span></div></div></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="vorgaenge" class="section">
-        <div class="content-wrap">
-          <aside class="sidebar-card">
-            <div class="profile-pill"><div class="avatar">VG</div><div><strong>Vorgänge</strong><br><span class="subtle">Von Anfrage bis Rechnung</span></div></div>
-            <p class="subtle">Auch hier bleibt der Stil konsistent: hell, warm, professionell, mit klaren Karten und wenig visueller Unruhe.</p>
-          </aside>
-          <div class="content-card">
-            <div class="section-head">
-              <div>
-                <div class="eyebrow" style="margin-bottom:10px">Vorgänge</div>
-                <h3>Pipeline</h3>
-                <p>So sieht der Weg von einer Anfrage bis zur Rechnung aus – alles im selben Business‑Cozy‑Look.</p>
-              </div>
-              <button class="primary-btn">Neuen Vorgang anlegen</button>
-            </div>
-            <div class="kanban">
-              <div class="kanban-col"><h4>Anfragen</h4><div class="card-mini"><strong>Wohnungsrenovierung</strong><div class="subtle">Schmidt GmbH</div><div style="margin-top:8px"><span class="status st-new">Neu</span></div></div><div class="card-mini"><strong>Eventausstattung</strong><div class="subtle">Messe Partner</div><div style="margin-top:8px"><span class="status st-send">Analyse läuft</span></div></div></div>
-              <div class="kanban-col"><h4>Angebote</h4><div class="card-mini"><strong>Küchensanierung</strong><div class="subtle">Müller GmbH · 2.850 €</div><div style="margin-top:8px"><span class="status st-draft">Entwurf</span></div></div><div class="card-mini"><strong>Gartenpflege Abo</strong><div class="subtle">Krause Immobilien · 320 €</div><div style="margin-top:8px"><span class="status st-send">Versendet</span></div></div></div>
-              <div class="kanban-col"><h4>Aufträge</h4><div class="card-mini"><strong>Büroausbau</strong><div class="subtle">Muster AG · 4.800 €</div><div style="margin-top:8px"><span class="status st-ok">Angenommen</span></div></div><div class="card-mini"><strong>Wartungsvertrag</strong><div class="subtle">Alpha IT · 980 €</div><div style="margin-top:8px"><span class="status st-ok">In Arbeit</span></div></div></div>
-              <div class="kanban-col"><h4>Rechnungen</h4><div class="card-mini"><strong>Rechnung #2025-014</strong><div class="subtle">Weber Dienstleistungen · 1.250 €</div><div style="margin-top:8px"><span class="status st-draft">Entwurf</span></div></div><div class="card-mini"><strong>Rechnung #2025-013</strong><div class="subtle">Beta Service · 690 €</div><div style="margin-top:8px"><span class="status st-send">Versendet</span></div></div></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="leistungen" class="section">
-        <div class="content-wrap">
-          <aside class="sidebar-card">
-            <div class="profile-pill"><div class="avatar">LK</div><div><strong>Leistungskatalog</strong><br><span class="subtle">Breit gefächert</span></div></div>
-            <p class="subtle">Der Katalog ist das Herzstück für viele Geschäftskunden. Er macht das System wirklich branchenoffen.</p>
-          </aside>
-          <div class="content-card">
-            <div class="section-head">
-              <div>
-                <div class="eyebrow" style="margin-bottom:10px">Leistungen</div>
-                <h3>Dein Katalog</h3>
-                <p>Mehrere Leistungen, verschiedene Preisarten und klare Beschreibungen – alles in einem sauberen, einheitlichen Look.</p>
-              </div>
-              <button class="primary-btn">Leistung hinzufügen</button>
-            </div>
-            <div class="service-grid">
-              <div class="service"><h4>Arbeitsstunde</h4><p>Ideal für Handwerk, IT, Beratung oder Agenturleistungen.</p><span class="price">72 € / Stunde</span></div>
-              <div class="service"><h4>Anfahrt</h4><p>Feste Nebenkosten als einzelne Position im Angebot.</p><span class="price">29 € pauschal</span></div>
-              <div class="service"><h4>Materialpauschale</h4><p>Wenn kleinere Verbrauchsmaterialien mitberechnet werden.</p><span class="price">45 € pauschal</span></div>
-              <div class="service"><h4>Gartenpflege</h4><p>Typisch für Gartenbau und Außenanlagen.</p><span class="price">1,80 € / m²</span></div>
-              <div class="service"><h4>Website-Paket</h4><p>Für Agenturen oder IT-Dienstleister mit Festpreisangeboten.</p><span class="price">1.490 € Paket</span></div>
-              <div class="service"><h4>Eventtechnik-Paket</h4><p>Für Vermietung, Event und Serviceeinsätze.</p><span class="price">350 € Paket</span></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="firma" class="section">
-        <div class="content-wrap">
-          <aside class="sidebar-card">
-            <div class="profile-pill"><div class="avatar">FI</div><div><strong>Firma</strong><br><span class="subtle">Profil & Einstellungen</span></div></div>
-            <p class="subtle">Auch der Einstellungsbereich soll genau so aussehen wie die Startseite und der Rest der Plattform.</p>
-          </aside>
-          <div class="content-card">
-            <div class="section-head">
-              <div>
-                <div class="eyebrow" style="margin-bottom:10px">Firma</div>
-                <h3>Unternehmensprofil</h3>
-                <p>Hier können Geschäftsinfos, Markenauftritt, Standardtexte und Grundeinstellungen sauber gepflegt werden.</p>
-              </div>
-              <button class="primary-btn">Speichern</button>
-            </div>
-            <div class="company-grid">
-              <div class="info-box">
-                <h4>Basisdaten</h4>
-                <div class="form-grid">
-                  <div class="field"><label>Firmenname</label><input value="Musterunternehmen GmbH"></div>
-                  <div class="field"><label>Branche</label><input value="Dienstleistung & Handwerk"></div>
-                  <div class="field"><label>E-Mail</label><input value="kontakt@musterunternehmen.de"></div>
-                  <div class="field"><label>Telefon</label><input value="+49 123 456789"></div>
-                  <div class="full"><label>Adresse</label><input value="Beispielstraße 10, 12345 Musterstadt"></div>
-                </div>
-              </div>
-              <div class="info-box">
-                <h4>Standards</h4>
-                <div class="stack">
-                  <div class="todo"><div><strong>Angebotsvorlage</strong><p>Freundlich, professionell, klar strukturiert</p></div><span class="badge">Aktiv</span></div>
-                  <div class="todo"><div><strong>Rechnungstext</strong><p>Standardtext für Rechnungsentwürfe hinterlegt</p></div><span class="badge">Aktiv</span></div>
-                  <div class="todo"><div><strong>Signatur</strong><p>Max Mustermann · Geschäftsführer</p></div><span class="badge">Bearbeiten</span></div>
-                </div>
-              </div>
-            </div>
-            <div class="stats-line" style="margin-top:16px">
-              <div class="summary-card"><small>Branchenprofil</small><b>Flexibel</b><small>Auf viele Geschäftskunden ausgerichtet</small></div>
-              <div class="summary-card"><small>Preislogik</small><b>4</b><small>Stunde, Stück, m², Pauschale</small></div>
-              <div class="summary-card"><small>Leistungen</small><b>18</b><small>Aktuell im Katalog</small></div>
-              <div class="summary-card"><small>Texte</small><b>6</b><small>Vorlagen hinterlegt</small></div>
-              <div class="summary-card"><small>Status</small><b>Demo</b><small>Noch Testbetrieb</small></div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <footer>
-      AngebotsPilot AI 14.0 · Full Business Cozy Suite · Einheitlicher Business-Cozy-Stil für Startseite, Dashboard, Anfrage, Vorgänge, Leistungen und Firma.
-    </footer>
   </div>
+</section>
 
-  <script>
-    const buttons=[...document.querySelectorAll('.nav-btn,[data-go],.side-link')];
-    const sections=[...document.querySelectorAll('.section')];
-    const navButtons=[...document.querySelectorAll('.nav-btn')];
-    function openSection(id){
-      sections.forEach(s=>s.classList.toggle('active',s.id===id));
-      navButtons.forEach(b=>b.classList.toggle('active',b.dataset.target===id));
-      document.querySelectorAll('.side-link').forEach(b=>b.classList.toggle('active',b.dataset.target===id));
-      window.scrollTo({top:0,behavior:'smooth'});
-    }
-    buttons.forEach(btn=>btn.addEventListener('click',()=>openSection(btn.dataset.target||btn.dataset.go)));
-  </script>
-</body>
+<div id="loginOverlay" class="login-overlay">
+  <div class="login-card">
+    <div class="eyebrow">Geschützter Bereich</div>
+    <h2>Anmelden</h2>
+    <p>Melde dich mit deinem echten Supabase-Benutzerkonto an. Deine Sitzung wird sicher über Supabase verwaltet.</p>
+    <div class="field"><label>E-Mail</label><input id="email" value="niclas.immler@web.de"></div>
+    <div class="field"><label>Passwort</label><input id="password" type="password" placeholder="Dein Supabase-Passwort"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:15px"><button id="loginDo" class="btn primary">Anmelden</button><button id="loginClose" class="btn">Abbrechen</button></div>
+    <div class="notice" id="loginNotice">Echter Login ist aktiv. E-Mail-, Lager- und Lieferanten-Verbindungen sind weiterhin Demo, bis wir sie separat anbinden.</div>
+  </div>
+</div>
+
+<footer>© AngebotsPilot AI · Business Autopilot Prototype</footer>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://uganxxjmcmoqmjljmbjs.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_afVy8wF1EToOVNZlKiZ7Kw_28W8Emvj';
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+const overlay=document.getElementById('loginOverlay');
+const publicSite=document.getElementById('publicSite');
+const app=document.getElementById('app');
+const loginNotice=document.getElementById('loginNotice');
+
+function localLog(text){
+  const activity=JSON.parse(localStorage.getItem('ap21_activity')||'[]');
+  activity.unshift({time:new Date().toLocaleString('de-DE'),text});
+  activity.splice(30);
+  localStorage.setItem('ap21_activity',JSON.stringify(activity));
+  renderActivity();
+}
+function renderActivity(){
+  const activity=JSON.parse(localStorage.getItem('ap21_activity')||'[]');
+  document.getElementById('activityList').innerHTML=activity.length
+   ? activity.map(a=>`<div class="log"><b>${a.text}</b><small>${a.time}</small></div>`).join('')
+   : '<small>Noch keine lokalen Demo-Aktivitäten.</small>';
+}
+async function loadMembership(user){
+  const {data,error}=await sb.from('memberships').select('role, organization_id').eq('user_id',user.id).eq('active',true).limit(1).maybeSingle();
+  if(error){console.warn(error.message);return null;}
+  return data;
+}
+async function openPrivateArea(user){
+  const membership=await loadMembership(user);
+  document.getElementById('who').textContent=user.email||'Angemeldet';
+  const names={owner:'Inhaber / Administrator',admin:'Administrator',staff:'Mitarbeiter',customer:'Kunde'};
+  document.getElementById('roleLabel').textContent=membership?(names[membership.role]||membership.role):'Benutzer';
+  publicSite.style.display='none'; app.classList.add('show'); overlay.classList.remove('show');
+}
+async function showPublicArea(){app.classList.remove('show');publicSite.style.display='block';}
+['loginOpen','heroLogin','ctaLogin'].forEach(id=>document.getElementById(id).onclick=()=>overlay.classList.add('show'));
+document.getElementById('loginClose').onclick=()=>overlay.classList.remove('show');
+document.getElementById('loginDo').onclick=async()=>{
+  const email=document.getElementById('email').value.trim();
+  const password=document.getElementById('password').value;
+  loginNotice.textContent='Anmeldung läuft …';
+  const {data,error}=await sb.auth.signInWithPassword({email,password});
+  if(error){loginNotice.textContent='Anmeldung fehlgeschlagen: '+error.message;return;}
+  loginNotice.textContent='Anmeldung erfolgreich.';
+  await openPrivateArea(data.user);
+};
+document.getElementById('logout').onclick=async()=>{await sb.auth.signOut();localLog('Abgemeldet');await showPublicArea();};
+function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('hidden',v.id!==id));document.querySelectorAll('.sidebtn[data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===id));localLog('Bereich geöffnet: '+id)}
+document.querySelectorAll('.sidebtn[data-view]').forEach(b=>b.onclick=()=>showView(b.dataset.view));
+document.querySelectorAll('.switch').forEach(s=>s.onclick=()=>{s.classList.toggle('on');localLog('Automationsregel geändert')});
+document.getElementById('saveSite').onclick=()=>{localLog('Website-Datenquelle gespeichert: '+document.getElementById('siteUrl').value);alert('Website als Demo-Datenquelle gespeichert.')};
+document.getElementById('runAutopilot').onclick=()=>{
+  const decision=document.getElementById('decision'),reply=document.getElementById('autoReply');decision.style.display='block';
+  decision.innerHTML='<b>Entscheidung: GRÜN – automatische Antwort erlaubt.</b><br>Produkt eindeutig erkannt · Bestand 31 · Anfrage 25 · Standardpreis vorhanden · keine Sonderkonditionen.';
+  reply.textContent='Betreff: Ihre Anfrage zu Produkt X\n\nGuten Tag,\n\nvielen Dank für Ihre Anfrage.\n\nDie gewünschten 25 Stück von Produkt X sind aktuell verfügbar und können kurzfristig geliefert werden. Unser hinterlegter Standardpreis beträgt 42,00 € netto pro Stück.\n\nGerne bereiten wir Ihnen auf dieser Grundlage ein entsprechendes Angebot vor.\n\nFreundliche Grüße\nIhr Team';
+  localLog('E-Mail-Autopilot hat Anfrage analysiert und Antwort vorbereitet');
+};
+document.getElementById('demoSend').onclick=()=>{localLog('Demo-Antwort als versendet markiert');alert('Demo: Die Antwort wurde protokolliert. Für echten Versand verbinden wir später das Firmen-Mailkonto serverseitig.')};
+(async()=>{renderActivity();const {data}=await sb.auth.getSession();if(data.session?.user) await openPrivateArea(data.session.user);else await showPublicArea();})();
+sb.auth.onAuthStateChange(async(event,session)=>{if(event==='SIGNED_IN'&&session?.user) await openPrivateArea(session.user);if(event==='SIGNED_OUT') await showPublicArea();});
+</script>
+</ body>
 </html>
+  
