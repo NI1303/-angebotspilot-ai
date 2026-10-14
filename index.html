@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>AngebotsPilot AI 25 – Produkte & Lager</title>
+<title>AngebotsPilot AI 26 – Einfacher Lagerimport</title>
 <meta name="description" content="AngebotsPilot AI verbindet Anfragen, Angebote, Aufträge, E-Mails, Lagerbestand, Preislisten und Automationen.">
 <style>
 :root{
@@ -98,6 +98,12 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1
 @media(max-width:900px){.inventory-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:600px){.inventory-grid{grid-template-columns:1fr}}
 
+
+.import-drop{border:2px dashed #d9cdbc;border-radius:20px;padding:24px;text-align:center;background:#fbf8f3}
+.import-preview{max-height:360px;overflow:auto;border:1px solid var(--line);border-radius:16px;margin-top:12px}
+.compact-actions{display:flex;gap:8px;flex-wrap:wrap}
+.smallnote{font-size:12px;color:var(--muted);line-height:1.5}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -176,12 +182,12 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1
       <div class="userbox"><b id="who">owner@angebotspilot.demo</b><small id="roleLabel">Inhaber / Administrator</small></div>
       <button class="sidebtn on" data-view="dashboard">Übersicht</button>
       <button class="sidebtn" data-view="customers">Kunden</button>
-      <button class="sidebtn" data-view="inventory">Produkte & Lager</button>
+      <button class="sidebtn" data-view="inventory">Lager</button>
       <button class="sidebtn" data-view="connections">Verbindungen</button>
-      <button class="sidebtn" data-view="automations">Automation Studio</button>
+      <button class="sidebtn" data-view="automations">Automationen</button>
       <button class="sidebtn" data-view="mailflow">E-Mail-Autopilot</button>
       <button class="sidebtn" data-view="activity">Aktivitäten</button>
-      <button class="sidebtn" data-view="users">Benutzer & Rollen</button>
+      <button class="sidebtn" data-view="users">Benutzer</button>
       <button id="logout" class="sidebtn" style="margin-top:16px">Abmelden</button>
     </aside>
 
@@ -257,11 +263,11 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1
       <div id="inventory" class="view hidden">
         <div class="head">
           <div>
-            <div class="eyebrow">Produkte & Lager</div>
+            <div class="eyebrow">Lager</div>
             <h2>Echter Bestand für automatische Antworten.</h2>
             <p>Produkte, Preise, verfügbare Mengen, Reservierungen, Mindestbestand und Lieferzeiten werden pro Firma in Supabase gespeichert.</p>
           </div>
-          <button id="newProductBtn" class="btn primary">+ Produkt anlegen</button>
+          <div class="compact-actions"><button id="importProductsBtn" class="btn primary">Bestand importieren</button><button id="newProductBtn" class="btn">+ Einzelnes Produkt</button></div>
         </div>
 
         <div class="stats">
@@ -271,7 +277,44 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1
           <div class="stat"><small>Nicht verfügbar</small><b id="prodStatZero">–</b><span class="badge red">0 verfügbar</span></div>
         </div>
 
-        <div id="productBuilder" class="box hidden" style="margin-top:14px">
+        
+        <div id="importBox" class="box hidden" style="margin-top:14px">
+          <div class="head" style="margin-bottom:10px">
+            <div>
+              <h3 style="margin:0">Bestand in einem Schritt importieren</h3>
+              <p style="margin-top:5px">CSV-Datei auswählen. AngebotsPilot erkennt die Spalten automatisch und aktualisiert vorhandene Artikel anhand der SKU.</p>
+            </div>
+            <button id="closeImportBtn" class="btn">Schließen</button>
+          </div>
+
+          <div class="import-drop">
+            <input id="csvFileInput" type="file" accept=".csv,text/csv" style="max-width:520px">
+            <div class="smallnote" style="margin-top:10px">
+              Empfohlene Spalten: <b>sku, name, stock, reserved, sale_price, purchase_price, reorder_level, lead_time_days, supplier</b>
+            </div>
+          </div>
+
+          <div id="importStatus" class="notice hidden" style="margin-top:12px"></div>
+
+          <div id="importPreviewWrap" class="hidden">
+            <div class="head" style="margin-top:16px;margin-bottom:8px">
+              <div>
+                <h3 style="margin:0">Vorschau</h3>
+                <p id="importSummary" style="margin-top:5px"></p>
+              </div>
+              <button id="runImportBtn" class="btn primary">Jetzt importieren</button>
+            </div>
+            <div class="import-preview">
+              <table>
+                <thead><tr><th>SKU</th><th>Name</th><th>Bestand</th><th>Reserviert</th><th>VK</th><th>Lieferzeit</th></tr></thead>
+                <tbody id="importPreviewBody"></tbody>
+              </table>
+            </div>
+            <div class="smallnote" style="margin-top:10px">Bestehende SKU werden aktualisiert. Neue SKU werden angelegt. Zeilen ohne Produktname werden übersprungen.</div>
+          </div>
+        </div>
+
+<div id="productBuilder" class="box hidden" style="margin-top:14px">
           <h3>Produkt anlegen</h3>
           <div class="formgrid">
             <div class="field"><label>Produktname *</label><input id="prodName" placeholder="z. B. Produkt X"></div>
@@ -459,7 +502,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1
             <div class="flowstep"><b>1. Anfrage</b><p>„Habt ihr 25 Stück Produkt X?“</p></div>
             <div class="flowstep"><b>2. Quelle wählen</b><p>Lager / Bestandswebsite wird als relevante Quelle erkannt.</p></div>
             <div class="flowstep"><b>3. Daten prüfen</b><p>Bestand, Preis und Lieferzeit kommen aus verbundenen Systemen.</p></div>
-            <div class="flowstep"><b>4. Regel prüfen</b><p>Automation Studio entscheidet: automatisch, Freigabe oder manuell.</p></div>
+            <div class="flowstep"><b>4. Regel prüfen</b><p>Automationen entscheidet: automatisch, Freigabe oder manuell.</p></div>
             <div class="flowstep"><b>5. Antwort</b><p>Nur geprüfte Unternehmensdaten werden in der Antwort verwendet.</p></div>
           </div>
         </div>
@@ -468,7 +511,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1
       <div id="automations" class="view hidden">
         <div class="head">
           <div>
-            <div class="eyebrow">Automation Studio</div>
+            <div class="eyebrow">Automationen</div>
             <h2>Welche E-Mails darf AngebotsPilot automatisch beantworten?</h2>
             <p>Jede Firma kann eigene Regeln festlegen. Sichere Standardfälle laufen automatisch. Sensible, wichtige oder ungewöhnliche Nachrichten bleiben manuell.</p>
           </div>
@@ -644,7 +687,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1
       </div>
 
       <div id="users" class="view hidden">
-        <div class="head"><div><div class="eyebrow">Benutzer & Rollen</div><h2>Zugriffe verwalten</h2><p>Inhaber sieht alles. Mitarbeiter und Kunden erhalten nur die Module, die sie brauchen.</p></div><button class="btn primary">+ Benutzer einladen</button></div>
+        <div class="head"><div><div class="eyebrow">Benutzer</div><h2>Zugriffe verwalten</h2><p>Inhaber sieht alles. Mitarbeiter und Kunden erhalten nur die Module, die sie brauchen.</p></div><button class="btn primary">+ Benutzer einladen</button></div>
         <table>
           <thead><tr><th>E-Mail</th><th>Rolle</th><th>Zugriff</th><th>Status</th></tr></thead>
           <tbody>
@@ -931,6 +974,199 @@ async function loadProductSources(){
   sel.innerHTML='<option value="">Keine / manuell</option>'+
     (data||[]).map(s=>`<option value="${esc(s.id)}">${esc(s.name)} (${esc(sourceTypeLabel(s.source_type))})</option>`).join('');
 }
+
+
+let importRows=[];
+
+function normalizeHeader(h){
+  return String(h||'').trim().toLowerCase()
+    .replace(/[ä]/g,'ae').replace(/[ö]/g,'oe').replace(/[ü]/g,'ue')
+    .replace(/[ß]/g,'ss').replace(/[\s\-\/]+/g,'_');
+}
+
+function parseCsvLine(line, delimiter){
+  const out=[]; let cur=''; let q=false;
+  for(let i=0;i<line.length;i++){
+    const ch=line[i];
+    if(ch==='"'){
+      if(q && line[i+1]==='"'){cur+='"';i++;}
+      else q=!q;
+    } else if(ch===delimiter && !q){
+      out.push(cur); cur='';
+    } else cur+=ch;
+  }
+  out.push(cur);
+  return out.map(v=>v.trim());
+}
+
+function detectDelimiter(firstLine){
+  const commas=(firstLine.match(/,/g)||[]).length;
+  const semis=(firstLine.match(/;/g)||[]).length;
+  return semis>commas?';':',';
+}
+
+function num(v){
+  if(v===null||v===undefined||String(v).trim()==='') return null;
+  const n=Number(String(v).trim().replace(/\s/g,'').replace(',','.'));
+  return Number.isFinite(n)?n:null;
+}
+
+function mapRow(obj){
+  const get=(...keys)=>{
+    for(const k of keys) if(obj[k]!==undefined && String(obj[k]).trim()!=='') return obj[k];
+    return '';
+  };
+  const sku=get('sku','artikelnummer','artikel_nr','article_number','product_code','produktcode');
+  const name=get('name','produkt','produktname','artikel','bezeichnung','description_name');
+  const stock=num(get('stock','bestand','lagerbestand','qty','quantity','menge')) ?? 0;
+  const reserved=num(get('reserved','reserviert','reserved_qty')) ?? 0;
+  const sale=num(get('sale_price','verkaufspreis','vk','price','preis'));
+  const purchase=num(get('purchase_price','einkaufspreis','ek'));
+  const reorder=num(get('reorder_level','mindestbestand','minimum_stock','min_stock')) ?? 0;
+  const lead=num(get('lead_time_days','lieferzeit','lieferzeit_tage','lead_time'));
+  const supplier=get('supplier','lieferant','supplier_name');
+  const description=get('description','beschreibung','text');
+
+  return {
+    sku:String(sku||'').trim() || null,
+    name:String(name||'').trim(),
+    stock_qty:Math.max(0,stock||0),
+    reserved_qty:Math.max(0,Math.min(reserved||0,stock||0)),
+    sale_price:sale,
+    purchase_price:purchase,
+    reorder_level:Math.max(0,reorder||0),
+    lead_time_days:lead==null?null:Math.max(0,Math.round(lead)),
+    supplier_name:String(supplier||'').trim() || null,
+    description:String(description||'').trim() || null
+  };
+}
+
+async function handleCsvFile(file){
+  const status=document.getElementById('importStatus');
+  const wrap=document.getElementById('importPreviewWrap');
+  status.classList.remove('hidden');
+  status.textContent='Datei wird gelesen …';
+  wrap.classList.add('hidden');
+
+  try{
+    const text=await file.text();
+    const lines=text.replace(/^\uFEFF/,'').split(/\r?\n/).filter(l=>l.trim()!=='');
+    if(lines.length<2) throw new Error('Die CSV enthält keine Datenzeilen.');
+
+    const delimiter=detectDelimiter(lines[0]);
+    const headers=parseCsvLine(lines[0],delimiter).map(normalizeHeader);
+
+    const rows=[];
+    for(let i=1;i<lines.length;i++){
+      const vals=parseCsvLine(lines[i],delimiter);
+      const obj={};
+      headers.forEach((h,idx)=>obj[h]=vals[idx]??'');
+      const mapped=mapRow(obj);
+      if(mapped.name) rows.push(mapped);
+    }
+
+    if(!rows.length) throw new Error('Keine gültigen Produkte gefunden. Eine Spalte für Produktname/Bezeichnung wird benötigt.');
+
+    importRows=rows;
+    document.getElementById('importSummary').textContent=`${rows.length} gültige Produkte erkannt.`;
+    document.getElementById('importPreviewBody').innerHTML=rows.slice(0,50).map(r=>`
+      <tr>
+        <td>${esc(r.sku||'–')}</td>
+        <td><b>${esc(r.name)}</b></td>
+        <td>${Number(r.stock_qty).toLocaleString('de-DE')}</td>
+        <td>${Number(r.reserved_qty).toLocaleString('de-DE')}</td>
+        <td>${r.sale_price!=null?Number(r.sale_price).toLocaleString('de-DE',{style:'currency',currency:'EUR'}):'–'}</td>
+        <td>${r.lead_time_days!=null?esc(r.lead_time_days)+' Tage':'–'}</td>
+      </tr>`).join('');
+
+    status.textContent=`Bereit: ${rows.length} Produkte erkannt.`;
+    wrap.classList.remove('hidden');
+  }catch(e){
+    importRows=[];
+    status.textContent='Fehler: '+e.message;
+  }
+}
+
+async function runCsvImport(){
+  if(!importRows.length) return;
+
+  const status=document.getElementById('importStatus');
+  const btn=document.getElementById('runImportBtn');
+  btn.disabled=true;
+
+  let created=0, updated=0, skipped=0, failed=0;
+
+  // Process sequentially for reliability in a static browser app.
+  for(let i=0;i<importRows.length;i++){
+    const r=importRows[i];
+    status.textContent=`Importiere ${i+1} von ${importRows.length} …`;
+
+    let existing=null;
+    if(r.sku){
+      const {data}=await sb.from('products')
+        .select('id,stock_qty')
+        .eq('organization_id',currentOrgId)
+        .eq('sku',r.sku)
+        .maybeSingle();
+      existing=data;
+    }
+
+    const payload={
+      organization_id:currentOrgId,
+      sku:r.sku,
+      name:r.name,
+      description:r.description,
+      stock_qty:r.stock_qty,
+      reserved_qty:r.reserved_qty,
+      purchase_price:r.purchase_price,
+      sale_price:r.sale_price,
+      currency:'EUR',
+      reorder_level:r.reorder_level,
+      lead_time_days:r.lead_time_days,
+      supplier_name:r.supplier_name,
+      active:true,
+      updated_at:new Date().toISOString()
+    };
+
+    if(existing){
+      const {error}=await sb.from('products').update(payload).eq('id',existing.id);
+      if(error){failed++; continue;}
+      updated++;
+
+      const delta=Number(r.stock_qty)-Number(existing.stock_qty||0);
+      if(delta!==0){
+        await sb.from('stock_movements').insert({
+          organization_id:currentOrgId,
+          product_id:existing.id,
+          change_qty:delta,
+          movement_type:'sync',
+          note:'CSV-Import',
+          actor_user_id:currentUser.id
+        });
+      }
+    }else{
+      const {data,error}=await sb.from('products').insert(payload).select('id').single();
+      if(error){failed++; continue;}
+      created++;
+      if(Number(r.stock_qty)!==0){
+        await sb.from('stock_movements').insert({
+          organization_id:currentOrgId,
+          product_id:data.id,
+          change_qty:Number(r.stock_qty),
+          movement_type:'sync',
+          note:'CSV-Erstimport',
+          actor_user_id:currentUser.id
+        });
+      }
+    }
+  }
+
+  await writeActivity('CSV-Lagerimport durchgeführt','inventory_import',null,{created,updated,failed,total:importRows.length});
+  status.textContent=`Fertig: ${created} neu, ${updated} aktualisiert${failed?`, ${failed} Fehler`:''}.`;
+  btn.disabled=false;
+  await Promise.all([loadProducts(),loadDashboard(),loadActivity()]);
+}
+
 
 async function loadProducts(){
   if(!currentOrgId) return;
@@ -1606,6 +1842,23 @@ document.getElementById('cancelProductBtn').onclick=()=>{
 document.getElementById('saveProductBtn').onclick=saveProduct;
 document.getElementById('refreshProductsBtn').onclick=loadProducts;
 document.getElementById('lookupProductBtn').onclick=lookupInventory;
+
+document.getElementById('importProductsBtn').onclick=()=>{
+  document.getElementById('importBox').classList.remove('hidden');
+  document.getElementById('csvFileInput').value='';
+  document.getElementById('importPreviewWrap').classList.add('hidden');
+  document.getElementById('importStatus').classList.add('hidden');
+  importRows=[];
+};
+document.getElementById('closeImportBtn').onclick=()=>{
+  document.getElementById('importBox').classList.add('hidden');
+};
+document.getElementById('csvFileInput').onchange=(e)=>{
+  const file=e.target.files?.[0];
+  if(file) handleCsvFile(file);
+};
+document.getElementById('runImportBtn').onclick=runCsvImport;
+
 
 
 
