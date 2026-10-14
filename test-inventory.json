@@ -1,0 +1,28 @@
+[
+  {
+    "sku": "PX-001",
+    "name": "Produkt X",
+    "stock_qty": 31,
+    "reserved_qty": 0,
+    "sale_price": 42.0,
+    "purchase_price": 25.0,
+    "currency": "EUR",
+    "reorder_level": 5,
+    "lead_time_days": 2,
+    "supplier_name": "Test Lieferant GmbH",
+    "description": "Testartikel für die automatische Bestands-Synchronisierung."
+  },
+  {
+    "sku": "PY-002",
+    "name": "Produkt Y",
+    "stock_qty": 8,
+    "reserved_qty": 2,
+    "sale_price": 19.9,
+    "purchase_price": 11.5,
+    "currency": "EUR",
+    "reorder_level": 10,
+    "lead_time_days": 4,
+    "supplier_name": "Test Lieferant GmbH",
+    "description": "Zweiter Testartikel für die Synchronisierung."
+  }
+]
