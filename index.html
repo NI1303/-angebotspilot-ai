@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>AngebotsPilot AI 22 – Echte Kundendaten</title>
+<title>AngebotsPilot AI 23 – Automation Studio</title>
 <meta name="description" content="AngebotsPilot AI verbindet Anfragen, Angebote, Aufträge, E-Mails, Lagerbestand, Preislisten und Automationen.">
 <style>
 :root{
@@ -63,6 +63,22 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1
 .customer-actions{display:flex;gap:8px;flex-wrap:wrap}
 .empty-state{padding:30px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:18px;background:#fbf8f3}
 .sync-note{font-size:12px;color:var(--muted);margin-top:8px}
+
+
+.automation-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+.rule-card{background:#fbf8f3;border:1px solid var(--line);border-radius:20px;padding:16px;margin-top:10px}
+.rule-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.rule-top h4{margin:0 0 4px;font-size:16px}.rule-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.pill{display:inline-flex;align-items:center;padding:5px 8px;border-radius:999px;background:#eee8de;font-size:11px;font-weight:800;color:#5e625e}
+.pill.green{background:var(--green-soft);color:#286447}.pill.yellow{background:var(--amber-soft);color:#805b20}.pill.red{background:var(--red-soft);color:#94474e}.pill.blue{background:var(--blue-soft);color:#4568a8}
+.segment{display:flex;gap:6px;flex-wrap:wrap}.segbtn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:9px 11px;font-weight:750;cursor:pointer}.segbtn.on{background:var(--green);color:#fff;border-color:var(--green)}
+.logic-box{background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px;margin-top:10px}
+.logic-row{display:grid;grid-template-columns:1fr 1fr 1.2fr auto;gap:8px;margin-top:8px}
+.preview-mail{background:#fff;border:1px solid var(--line);border-radius:18px;padding:15px;min-height:210px}
+.decision-big{border-radius:18px;padding:16px;font-weight:850;margin-top:10px}
+.decision-big.green{background:var(--green-soft);color:#276448}.decision-big.yellow{background:var(--amber-soft);color:#7f5b20}.decision-big.red{background:var(--red-soft);color:#94464d}
+.helptext{font-size:12px;line-height:1.55;color:var(--muted)}
+@media(max-width:900px){.automation-grid,.logic-row{grid-template-columns:1fr}}
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -143,7 +159,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1
       <button class="sidebtn on" data-view="dashboard">Übersicht</button>
       <button class="sidebtn" data-view="customers">Kunden</button>
       <button class="sidebtn" data-view="connections">Verbindungen</button>
-      <button class="sidebtn" data-view="automations">Automationen</button>
+      <button class="sidebtn" data-view="automations">Automation Studio</button>
       <button class="sidebtn" data-view="mailflow">E-Mail-Autopilot</button>
       <button class="sidebtn" data-view="activity">Aktivitäten</button>
       <button class="sidebtn" data-view="users">Benutzer & Rollen</button>
@@ -261,24 +277,149 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1
         </div>
       </div>
 
+      
       <div id="automations" class="view hidden">
-        <div class="head"><div><div class="eyebrow">Autopilot-Regeln</div><h2>Was darf die KI selbstständig erledigen?</h2><p>Automationen werden bewusst nach Risiko aufgeteilt. Standardfälle können automatisch laufen, wichtige Entscheidungen benötigen Freigabe.</p></div></div>
-        <div class="rule-list">
-          <div class="rule"><div class="traffic green">Grün</div><div><b>Verfügbarkeit beantworten</b><div style="color:var(--muted);font-size:13px">Wenn Bestand und Preis eindeutig sind, darf die KI selbst antworten.</div></div><div class="switch on"></div></div>
-          <div class="rule"><div class="traffic green">Grün</div><div><b>Öffnungszeiten & Produktinfos</b><div style="color:var(--muted);font-size:13px">Informationen aus freigegebenen Quellen automatisch versenden.</div></div><div class="switch on"></div></div>
-          <div class="rule"><div class="traffic green">Grün</div><div><b>Terminbestätigung</b><div style="color:var(--muted);font-size:13px">Bestehende Termine bestätigen und Standardinfos senden.</div></div><div class="switch on"></div></div>
-          <div class="rule"><div class="traffic yellow">Gelb</div><div><b>Angebote über 5.000 €</b><div style="color:var(--muted);font-size:13px">KI bereitet vor, Inhaber muss freigeben.</div></div><div class="switch on"></div></div>
-          <div class="rule"><div class="traffic yellow">Gelb</div><div><b>Sonderrabatte</b><div style="color:var(--muted);font-size:13px">Rabatte werden nie ohne Freigabe zugesagt.</div></div><div class="switch on"></div></div>
-          <div class="rule"><div class="traffic red">Rot</div><div><b>Rechtliche Beschwerden / Zahlungsstreit</b><div style="color:var(--muted);font-size:13px">Immer an einen Menschen weiterleiten.</div></div><div class="switch"></div></div>
-        </div>
-        <div class="box" style="margin-top:16px">
-          <h3>Eigene Regel</h3>
-          <div class="formgrid">
-            <div class="field"><label>Wenn …</label><input value="Anfrage nach Lagerbestand und Standardpreis"></div>
-            <div class="field"><label>Dann …</label><select><option>Automatisch antworten</option><option>Antwort vorbereiten + Freigabe</option><option>An Mitarbeiter weiterleiten</option></select></div>
-            <div class="full field"><label>Bedingung</label><textarea>Nur wenn Artikel eindeutig erkannt wurde, Bestand > angefragte Menge und keine Sonderkondition verlangt wird.</textarea></div>
+        <div class="head">
+          <div>
+            <div class="eyebrow">Automation Studio</div>
+            <h2>Welche E-Mails darf AngebotsPilot automatisch beantworten?</h2>
+            <p>Jede Firma kann eigene Regeln festlegen. Sichere Standardfälle laufen automatisch. Sensible, wichtige oder ungewöhnliche Nachrichten bleiben manuell.</p>
           </div>
-          <button class="btn primary" style="margin-top:12px">Regel speichern</button>
+          <button id="newRuleBtn" class="btn primary">+ Neue E-Mail-Regel</button>
+        </div>
+
+        <div class="stats">
+          <div class="stat"><small>Aktive Regeln</small><b id="ruleStatActive">–</b><span class="badge">Supabase</span></div>
+          <div class="stat"><small>Automatisch</small><b id="ruleStatAuto">–</b><span class="badge">Grün</span></div>
+          <div class="stat"><small>Freigabe</small><b id="ruleStatApproval">–</b><span class="badge amber">Gelb</span></div>
+          <div class="stat"><small>Immer manuell</small><b id="ruleStatManual">–</b><span class="badge red">Rot</span></div>
+        </div>
+
+        <div class="automation-grid" style="margin-top:14px">
+          <div>
+            <div id="ruleBuilder" class="box hidden">
+              <h3>Neue Regel erstellen</h3>
+              <div class="formgrid">
+                <div class="field">
+                  <label>Regelname *</label>
+                  <input id="ruleName" placeholder="z. B. Standard-Lageranfragen">
+                </div>
+                <div class="field">
+                  <label>Was soll passieren?</label>
+                  <select id="ruleAction">
+                    <option value="auto_reply">Automatisch beantworten</option>
+                    <option value="draft_for_approval">Antwort vorbereiten + Freigabe</option>
+                    <option value="assign_human">Immer manuell bearbeiten</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label>Absender enthält</label>
+                  <input id="ruleSender" placeholder="@kunde.de oder leer lassen">
+                </div>
+                <div class="field">
+                  <label>Betreff enthält</label>
+                  <input id="ruleSubject" placeholder="z. B. Verfügbarkeit, Lieferzeit">
+                </div>
+
+                <div class="field">
+                  <label>E-Mail-Kategorie</label>
+                  <select id="ruleCategory">
+                    <option value="">Beliebige Kategorie</option>
+                    <option value="availability">Verfügbarkeit / Bestand</option>
+                    <option value="pricing">Preis / Angebot</option>
+                    <option value="delivery">Lieferzeit / Versand</option>
+                    <option value="appointment">Termin</option>
+                    <option value="invoice">Rechnung / Zahlung</option>
+                    <option value="complaint">Beschwerde / Reklamation</option>
+                    <option value="contract">Vertrag / Rechtliches</option>
+                    <option value="general">Allgemeine Frage</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Kundenstatus</label>
+                  <select id="ruleCustomerType">
+                    <option value="">Alle</option>
+                    <option value="existing">Bestandskunde</option>
+                    <option value="new">Neukunde</option>
+                    <option value="vip">VIP / wichtiger Kunde</option>
+                  </select>
+                </div>
+
+                <div class="field">
+                  <label>Max. Auftragswert für Automatik (€)</label>
+                  <input id="ruleMaxValue" type="number" min="0" step="1" placeholder="z. B. 5000">
+                </div>
+                <div class="field">
+                  <label>Priorität</label>
+                  <select id="rulePriority">
+                    <option value="normal">Normal</option>
+                    <option value="high">Hoch</option>
+                    <option value="critical">Kritisch</option>
+                  </select>
+                </div>
+
+                <div class="full field">
+                  <label>Schlüsselwörter, die Automatik stoppen</label>
+                  <input id="ruleStopWords" placeholder="z. B. Anwalt, Mahnung, Kündigung, Rabatt, Sonderpreis">
+                  <div class="helptext">Kommagetrennt. Sobald eines dieser Wörter erkannt wird, wird die Nachricht nicht automatisch versendet.</div>
+                </div>
+
+                <div class="full field">
+                  <label>Zusätzliche Anweisung für die KI</label>
+                  <textarea id="ruleInstruction" placeholder="z. B. Nur Fakten aus Preislisten und Lagerdaten verwenden. Keine Rabatte zusagen."></textarea>
+                </div>
+              </div>
+
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+                <button id="saveRuleBtn" class="btn primary">Regel speichern</button>
+                <button id="cancelRuleBtn" class="btn">Abbrechen</button>
+              </div>
+              <div id="ruleMessage" class="sync-note"></div>
+            </div>
+
+            <div class="box">
+              <div class="head" style="margin-bottom:6px">
+                <div>
+                  <h3 style="margin:0">Regeln dieser Firma</h3>
+                  <p style="margin-top:4px">Die Reihenfolge kann später als Priorität verwendet werden. Rot schlägt Gelb, Gelb schlägt Grün.</p>
+                </div>
+                <button id="refreshRulesBtn" class="btn">Aktualisieren</button>
+              </div>
+              <div id="rulesList"><div class="empty-state">Lade Regeln …</div></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="box">
+              <h3>Live-Regeltest</h3>
+              <p class="helptext">Teste schon jetzt, wie eine E-Mail eingeordnet würde. Der echte automatische Versand startet erst nach der Mailkonto-Anbindung.</p>
+
+              <div class="field" style="margin-top:12px">
+                <label>Absender</label>
+                <input id="testSender" value="einkauf@muster-gmbh.de">
+              </div>
+              <div class="field" style="margin-top:10px">
+                <label>Betreff</label>
+                <input id="testSubject" value="Verfügbarkeit Produkt X – 25 Stück">
+              </div>
+              <div class="field" style="margin-top:10px">
+                <label>E-Mail</label>
+                <textarea id="testBody">Guten Tag, wir benötigen 25 Stück von Produkt X. Können Sie kurzfristig liefern und uns den Standardpreis nennen?</textarea>
+              </div>
+
+              <button id="testRulesBtn" class="btn primary" style="margin-top:12px">Regeln testen</button>
+              <div id="ruleDecision" class="decision-big green">Noch kein Test durchgeführt.</div>
+              <div id="ruleWhy" class="logic-box"><span class="helptext">Hier erscheint, welche Regel gegriffen hat und warum.</span></div>
+            </div>
+
+            <div class="box" style="margin-top:14px">
+              <h3>Empfohlene Sicherheitslogik</h3>
+              <div class="log"><div><b>Automatisch</b><small>Bestand, Lieferzeit, Standardpreise, Öffnungszeiten, FAQ</small></div><span class="badge">Grün</span></div>
+              <div class="log"><div><b>Freigabe</b><small>Hohe Angebotswerte, Rabatte, Sonderkonditionen, ungewöhnliche Mengen</small></div><span class="badge amber">Gelb</span></div>
+              <div class="log"><div><b>Manuell</b><small>Beschwerden, Rechtliches, Zahlungsstreit, Kündigung, Vertragsänderungen</small></div><span class="badge red">Rot</span></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -586,6 +727,234 @@ async function loadActivity(){
     </div>`).join('');
 }
 
+
+function riskForAction(action){
+  if(action==='auto_reply') return 'green';
+  if(action==='draft_for_approval') return 'yellow';
+  return 'red';
+}
+function actionLabel(action){
+  return {
+    auto_reply:'Automatisch beantworten',
+    draft_for_approval:'Antwort + Freigabe',
+    assign_human:'Immer manuell'
+  }[action] || action;
+}
+function riskLabel(risk){
+  return {green:'Grün',yellow:'Gelb',red:'Rot'}[risk] || risk;
+}
+
+async function loadRules(){
+  if(!currentOrgId) return;
+  const list=document.getElementById('rulesList');
+
+  const {data,error}=await sb
+    .from('automation_rules')
+    .select('*')
+    .eq('organization_id',currentOrgId)
+    .eq('trigger_type','incoming_email')
+    .order('created_at',{ascending:false});
+
+  if(error){
+    list.innerHTML=`<div class="empty-state">Fehler: ${esc(error.message)}</div>`;
+    return;
+  }
+
+  const rows=data||[];
+  const active=rows.filter(r=>r.enabled).length;
+  const auto=rows.filter(r=>r.enabled && r.action_type==='auto_reply').length;
+  const approval=rows.filter(r=>r.enabled && r.action_type==='draft_for_approval').length;
+  const manual=rows.filter(r=>r.enabled && r.action_type==='assign_human').length;
+
+  document.getElementById('ruleStatActive').textContent=active;
+  document.getElementById('ruleStatAuto').textContent=auto;
+  document.getElementById('ruleStatApproval').textContent=approval;
+  document.getElementById('ruleStatManual').textContent=manual;
+
+  if(!rows.length){
+    list.innerHTML='<div class="empty-state">Noch keine E-Mail-Regeln vorhanden. Lege deine erste Regel an.</div>';
+    return;
+  }
+
+  list.innerHTML=rows.map(r=>{
+    const c=r.conditions||{};
+    const details=[];
+    if(c.sender_contains) details.push(`Absender: ${esc(c.sender_contains)}`);
+    if(c.subject_contains) details.push(`Betreff: ${esc(c.subject_contains)}`);
+    if(c.category) details.push(`Kategorie: ${esc(c.category)}`);
+    if(c.customer_type) details.push(`Kunde: ${esc(c.customer_type)}`);
+    if(c.max_value) details.push(`bis ${esc(c.max_value)} €`);
+    if(c.stop_words?.length) details.push(`Stop-Wörter: ${esc(c.stop_words.join(', '))}`);
+
+    return `<div class="rule-card">
+      <div class="rule-top">
+        <div>
+          <h4>${esc(r.name)}</h4>
+          <div class="helptext">${details.length?details.join(' · '):'Keine Zusatzfilter – gilt allgemein.'}</div>
+        </div>
+        <div class="switch ${r.enabled?'on':''} ruleToggle" data-id="${esc(r.id)}" data-enabled="${r.enabled?'1':'0'}"></div>
+      </div>
+      <div class="rule-meta">
+        <span class="pill ${esc(r.risk_level)}">${riskLabel(r.risk_level)}</span>
+        <span class="pill blue">${esc(actionLabel(r.action_type))}</span>
+        ${c.priority?`<span class="pill">Priorität: ${esc(c.priority)}</span>`:''}
+      </div>
+      ${c.instruction?`<div class="logic-box helptext">${esc(c.instruction)}</div>`:''}
+      <div style="display:flex;justify-content:flex-end;margin-top:10px">
+        <button class="btn danger deleteRuleBtn" data-id="${esc(r.id)}" data-name="${esc(r.name)}">Löschen</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.querySelectorAll('.ruleToggle').forEach(el=>{
+    el.onclick=async()=>{
+      const newValue=el.dataset.enabled!=='1';
+      const {error}=await sb.from('automation_rules').update({enabled:newValue}).eq('id',el.dataset.id);
+      if(error){alert(error.message);return}
+      await writeActivity(newValue?'E-Mail-Regel aktiviert':'E-Mail-Regel deaktiviert','automation_rule',el.dataset.id,{});
+      await loadRules(); await loadDashboard();
+    };
+  });
+
+  document.querySelectorAll('.deleteRuleBtn').forEach(btn=>{
+    btn.onclick=()=>deleteRule(btn.dataset.id,btn.dataset.name);
+  });
+}
+
+async function saveRule(){
+  const name=document.getElementById('ruleName').value.trim();
+  const action=document.getElementById('ruleAction').value;
+  const msg=document.getElementById('ruleMessage');
+
+  if(!name){msg.textContent='Bitte einen Regelnamen eingeben.';return}
+
+  const stopWords=document.getElementById('ruleStopWords').value
+    .split(',').map(x=>x.trim()).filter(Boolean);
+
+  const maxValue=document.getElementById('ruleMaxValue').value.trim();
+
+  const conditions={
+    sender_contains:document.getElementById('ruleSender').value.trim() || null,
+    subject_contains:document.getElementById('ruleSubject').value.trim() || null,
+    category:document.getElementById('ruleCategory').value || null,
+    customer_type:document.getElementById('ruleCustomerType').value || null,
+    max_value:maxValue ? Number(maxValue) : null,
+    priority:document.getElementById('rulePriority').value,
+    stop_words:stopWords,
+    instruction:document.getElementById('ruleInstruction').value.trim() || null
+  };
+
+  msg.textContent='Speichern …';
+  const {data,error}=await sb.from('automation_rules').insert({
+    organization_id:currentOrgId,
+    name,
+    risk_level:riskForAction(action),
+    trigger_type:'incoming_email',
+    conditions,
+    action_type:action,
+    enabled:true
+  }).select('id,name').single();
+
+  if(error){msg.textContent='Fehler: '+error.message;return}
+
+  await writeActivity('E-Mail-Regel angelegt','automation_rule',data.id,{name:data.name,action});
+  msg.textContent='Regel gespeichert.';
+  clearRuleForm();
+  document.getElementById('ruleBuilder').classList.add('hidden');
+  await Promise.all([loadRules(),loadDashboard(),loadActivity()]);
+}
+
+async function deleteRule(id,name){
+  if(!confirm(`Regel „${name}“ wirklich löschen?`)) return;
+  const {error}=await sb.from('automation_rules').delete().eq('id',id).eq('organization_id',currentOrgId);
+  if(error){alert('Löschen fehlgeschlagen: '+error.message);return}
+  await writeActivity('E-Mail-Regel gelöscht','automation_rule',null,{name});
+  await Promise.all([loadRules(),loadDashboard(),loadActivity()]);
+}
+
+function clearRuleForm(){
+  ['ruleName','ruleSender','ruleSubject','ruleMaxValue','ruleStopWords','ruleInstruction'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ruleAction').value='auto_reply';
+  document.getElementById('ruleCategory').value='';
+  document.getElementById('ruleCustomerType').value='';
+  document.getElementById('rulePriority').value='normal';
+  document.getElementById('ruleMessage').textContent='';
+}
+
+function inferCategory(subject,body){
+  const t=(subject+' '+body).toLowerCase();
+  if(/anwalt|kündig|vertrag|recht|abmahn/.test(t)) return 'contract';
+  if(/beschwer|reklamation|defekt|mangel/.test(t)) return 'complaint';
+  if(/rechnung|zahlung|mahnung/.test(t)) return 'invoice';
+  if(/termin|kalender|besprech/.test(t)) return 'appointment';
+  if(/liefer|versand|wann kommt/.test(t)) return 'delivery';
+  if(/preis|angebot|kosten|rabatt/.test(t)) return 'pricing';
+  if(/bestand|verfügbar|verfügbarkeit|stück/.test(t)) return 'availability';
+  return 'general';
+}
+
+async function testRules(){
+  const sender=document.getElementById('testSender').value.trim().toLowerCase();
+  const subject=document.getElementById('testSubject').value.trim();
+  const body=document.getElementById('testBody').value.trim();
+  const category=inferCategory(subject,body);
+  const all=(subject+' '+body).toLowerCase();
+
+  const {data,error}=await sb
+    .from('automation_rules')
+    .select('*')
+    .eq('organization_id',currentOrgId)
+    .eq('trigger_type','incoming_email')
+    .eq('enabled',true);
+
+  if(error){alert(error.message);return}
+
+  let matches=(data||[]).filter(r=>{
+    const c=r.conditions||{};
+    if(c.sender_contains && !sender.includes(String(c.sender_contains).toLowerCase())) return false;
+    if(c.subject_contains && !subject.toLowerCase().includes(String(c.subject_contains).toLowerCase())) return false;
+    if(c.category && c.category!==category) return false;
+    return true;
+  });
+
+  // Hard safety stop words override everything
+  const stopHit=[];
+  for(const r of matches){
+    const words=(r.conditions?.stop_words||[]);
+    const hit=words.find(w=>all.includes(String(w).toLowerCase()));
+    if(hit) stopHit.push({rule:r,word:hit});
+  }
+
+  let decision='draft_for_approval';
+  let matchedRule=null;
+  let reason='Keine eindeutige Regel gefunden. Deshalb wird eine Antwort vorbereitet und manuell freigegeben.';
+
+  if(stopHit.length){
+    decision='assign_human';
+    matchedRule=stopHit[0].rule;
+    reason=`Stop-Wort „${stopHit[0].word}“ erkannt. Automatischer Versand wird blockiert.`;
+  } else if(matches.length){
+    const weight={assign_human:3,draft_for_approval:2,auto_reply:1};
+    matches.sort((a,b)=>weight[b.action_type]-weight[a.action_type]);
+    matchedRule=matches[0];
+    decision=matchedRule.action_type;
+    reason=`Regel „${matchedRule.name}“ passt zur Nachricht. Erkannte Kategorie: ${category}.`;
+  }
+
+  // Built-in safety net for legal/complaint/payment
+  if(['contract','complaint'].includes(category)){
+    decision='assign_human';
+    reason='Sicherheitsregel: Rechtliches oder Beschwerden werden immer manuell behandelt.';
+  }
+
+  const el=document.getElementById('ruleDecision');
+  el.className='decision-big '+riskForAction(decision);
+  el.textContent=actionLabel(decision);
+  document.getElementById('ruleWhy').innerHTML=`<b>Warum?</b><div class="helptext" style="margin-top:6px">${esc(reason)}</div>
+    <div class="rule-meta" style="margin-top:10px"><span class="pill">Kategorie: ${esc(category)}</span>${matchedRule?`<span class="pill blue">Regel: ${esc(matchedRule.name)}</span>`:''}</div>`;
+}
+
+
 async function openPrivateArea(user){
   currentUser=user;
   const membership=await loadMembership(user);
@@ -608,7 +977,7 @@ async function openPrivateArea(user){
   app.classList.add('show');
   overlay.classList.remove('show');
 
-  await Promise.all([loadDashboard(),loadCustomers(),loadActivity()]);
+  await Promise.all([loadDashboard(),loadCustomers(),loadActivity(),loadRules()]);
 }
 
 async function showPublicArea(){
@@ -653,6 +1022,7 @@ function showView(id){
   if(id==='customers') loadCustomers();
   if(id==='activity') loadActivity();
   if(id==='dashboard') loadDashboard();
+  if(id==='automations') loadRules();
 }
 document.querySelectorAll('.sidebtn[data-view]').forEach(b=>b.onclick=()=>showView(b.dataset.view));
 
@@ -668,7 +1038,21 @@ document.getElementById('cancelCustomerBtn').onclick=()=>{
 document.getElementById('saveCustomerBtn').onclick=saveCustomer;
 document.getElementById('refreshCustomersBtn').onclick=loadCustomers;
 
-document.querySelectorAll('.switch').forEach(s=>s.onclick=()=>s.classList.toggle('on'));
+document.getElementById('newRuleBtn').onclick=()=>{
+  clearRuleForm();
+  document.getElementById('ruleBuilder').classList.remove('hidden');
+  document.getElementById('ruleName').focus();
+};
+document.getElementById('cancelRuleBtn').onclick=()=>{
+  clearRuleForm();
+  document.getElementById('ruleBuilder').classList.add('hidden');
+};
+document.getElementById('saveRuleBtn').onclick=saveRule;
+document.getElementById('refreshRulesBtn').onclick=loadRules;
+document.getElementById('testRulesBtn').onclick=testRules;
+
+
+document.querySelectorAll('.switch:not(.ruleToggle)').forEach(s=>s.onclick=()=>s.classList.toggle('on'));
 document.getElementById('saveSite').onclick=()=>alert('Diese Verbindung wird im nächsten Integrationsschritt serverseitig angebunden.');
 
 document.getElementById('runAutopilot').onclick=()=>{
