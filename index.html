@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>AngebotsPilot AI 26 – Einfacher Lagerimport</title>
+<title>AngebotsPilot AI 27 – Einfache Bestandsquelle</title>
 <meta name="description" content="AngebotsPilot AI verbindet Anfragen, Angebote, Aufträge, E-Mails, Lagerbestand, Preislisten und Automationen.">
 <style>
 :root{
@@ -103,6 +103,14 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1
 .import-preview{max-height:360px;overflow:auto;border:1px solid var(--line);border-radius:16px;margin-top:12px}
 .compact-actions{display:flex;gap:8px;flex-wrap:wrap}
 .smallnote{font-size:12px;color:var(--muted);line-height:1.5}
+
+
+.source-choice-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.source-choice{border:1px solid var(--line);background:#fff;border-radius:18px;padding:16px;text-align:left;cursor:pointer}
+.source-choice:hover,.source-choice.on{background:#f7f2ea;border-color:#cdb894}
+.source-choice b{display:block;margin-bottom:5px}.source-choice span{font-size:12px;color:var(--muted);line-height:1.5}
+.simple-connect{background:#fbf8f3;border:1px solid var(--line);border-radius:20px;padding:18px}
+@media(max-width:700px){.source-choice-grid{grid-template-columns:1fr}}
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -267,7 +275,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1
             <h2>Echter Bestand für automatische Antworten.</h2>
             <p>Produkte, Preise, verfügbare Mengen, Reservierungen, Mindestbestand und Lieferzeiten werden pro Firma in Supabase gespeichert.</p>
           </div>
-          <div class="compact-actions"><button id="importProductsBtn" class="btn primary">Bestand importieren</button><button id="newProductBtn" class="btn">+ Einzelnes Produkt</button></div>
+          <div class="compact-actions"><button id="connectInventoryBtn" class="btn primary">Bestandsquelle verbinden</button><button id="importProductsBtn" class="btn">Bestand importieren</button><button id="newProductBtn" class="btn">+ Einzelnes Produkt</button></div>
         </div>
 
         <div class="stats">
@@ -278,7 +286,64 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1
         </div>
 
         
-        <div id="importBox" class="box hidden" style="margin-top:14px">
+        
+        <div id="inventoryConnectBox" class="box hidden" style="margin-top:14px">
+          <div class="head" style="margin-bottom:10px">
+            <div>
+              <h3 style="margin:0">Wie verwaltet ihr euren Bestand?</h3>
+              <p style="margin-top:5px">Keine technischen Begriffe nötig. Wähle einfach, was am ehesten passt.</p>
+            </div>
+            <button id="closeInventoryConnectBtn" class="btn">Schließen</button>
+          </div>
+
+          <div class="source-choice-grid">
+            <button class="source-choice" data-choice="system">
+              <b>Wir haben ein Lager- oder Warenwirtschaftssystem</b>
+              <span>Zum Beispiel SAP, JTL, Lexware, weclapp, Odoo oder ein anderes System.</span>
+            </button>
+            <button class="source-choice" data-choice="portal">
+              <b>Wir haben eine Website oder ein Portal mit Bestand</b>
+              <span>Zum Beispiel eine interne Bestandsseite oder Lieferanten-/Lagerportal.</span>
+            </button>
+            <button class="source-choice" data-choice="file">
+              <b>Wir arbeiten mit Excel oder einer Liste</b>
+              <span>Dann importieren wir den Bestand schnell aus einer Datei.</span>
+            </button>
+            <button class="source-choice" data-choice="unknown">
+              <b>Ich weiß es nicht</b>
+              <span>Kein Problem. Sag uns einfach, womit ihr aktuell arbeitet.</span>
+            </button>
+          </div>
+
+          <div id="inventoryChoiceForm" class="simple-connect hidden" style="margin-top:14px">
+            <div class="formgrid">
+              <div class="field">
+                <label id="inventorySystemLabel">Name des Systems</label>
+                <input id="inventorySystemName" placeholder="z. B. JTL, SAP, interne Lagerseite">
+              </div>
+              <div class="field">
+                <label>Website-Adresse, falls vorhanden</label>
+                <input id="inventorySystemUrl" placeholder="https://...">
+              </div>
+              <div class="full field">
+                <label>Kurze Beschreibung</label>
+                <textarea id="inventorySystemNotes" placeholder="Wie schaut ihr heute nach dem Bestand?"></textarea>
+              </div>
+            </div>
+            <div class="notice">
+              Keine Passwörter eingeben. AngebotsPilot speichert hier nur, welches System genutzt wird. Die sichere technische Verbindung richten wir getrennt ein.
+            </div>
+            <div class="compact-actions" style="margin-top:12px">
+              <button id="saveInventoryConnectionBtn" class="btn primary">Weiter</button>
+              <button id="backInventoryConnectionBtn" class="btn">Zurück</button>
+            </div>
+            <div id="inventoryConnectionMessage" class="sync-note"></div>
+          </div>
+
+          <div id="inventoryConnectionResult" class="simple-connect hidden" style="margin-top:14px"></div>
+        </div>
+
+<div id="importBox" class="box hidden" style="margin-top:14px">
           <div class="head" style="margin-bottom:10px">
             <div>
               <h3 style="margin:0">Bestand in einem Schritt importieren</h3>
@@ -975,6 +1040,106 @@ async function loadProductSources(){
     (data||[]).map(s=>`<option value="${esc(s.id)}">${esc(s.name)} (${esc(sourceTypeLabel(s.source_type))})</option>`).join('');
 }
 
+
+
+let inventoryChoice=null;
+
+function resetInventoryConnector(){
+  inventoryChoice=null;
+  document.querySelectorAll('.source-choice').forEach(b=>b.classList.remove('on'));
+  document.getElementById('inventoryChoiceForm').classList.add('hidden');
+  document.getElementById('inventoryConnectionResult').classList.add('hidden');
+  document.getElementById('inventorySystemName').value='';
+  document.getElementById('inventorySystemUrl').value='';
+  document.getElementById('inventorySystemNotes').value='';
+  document.getElementById('inventoryConnectionMessage').textContent='';
+}
+
+function chooseInventorySource(choice){
+  inventoryChoice=choice;
+  document.querySelectorAll('.source-choice').forEach(b=>b.classList.toggle('on',b.dataset.choice===choice));
+  document.getElementById('inventoryChoiceForm').classList.remove('hidden');
+
+  const label=document.getElementById('inventorySystemLabel');
+  const input=document.getElementById('inventorySystemName');
+
+  if(choice==='system'){
+    label.textContent='Wie heißt euer System?';
+    input.placeholder='z. B. JTL, SAP, Lexware, weclapp, Odoo';
+  }else if(choice==='portal'){
+    label.textContent='Wie heißt die Bestandsseite / das Portal?';
+    input.placeholder='z. B. internes Lagerportal';
+  }else if(choice==='file'){
+    label.textContent='Wie nennt ihr eure Bestandsliste?';
+    input.placeholder='z. B. Lagerliste 2026';
+  }else{
+    label.textContent='Womit arbeitet ihr heute?';
+    input.placeholder='z. B. Excel, interne Seite, unbekanntes System';
+  }
+}
+
+async function saveSimpleInventoryConnection(){
+  const name=document.getElementById('inventorySystemName').value.trim();
+  const url=document.getElementById('inventorySystemUrl').value.trim();
+  const notes=document.getElementById('inventorySystemNotes').value.trim();
+  const msg=document.getElementById('inventoryConnectionMessage');
+
+  if(!inventoryChoice){msg.textContent='Bitte zuerst eine Auswahl treffen.';return}
+  if(!name){msg.textContent='Bitte kurz den Namen oder eine Beschreibung eintragen.';return}
+  if(url && !/^https?:\/\//i.test(url)){msg.textContent='Bitte eine vollständige Adresse mit https:// eingeben.';return}
+
+  const mapping={
+    system:{source_type:'inventory',method:'system',label:'Lager-/Warenwirtschaftssystem'},
+    portal:{source_type:'inventory',method:'portal',label:'Bestandswebsite / Portal'},
+    file:{source_type:'file',method:'csv',label:'Excel / Bestandsliste'},
+    unknown:{source_type:'other',method:'unknown',label:'Unklar / Prüfung nötig'}
+  }[inventoryChoice];
+
+  msg.textContent='Speichern …';
+
+  const {data,error}=await sb.from('data_sources').insert({
+    organization_id:currentOrgId,
+    name,
+    source_type:mapping.source_type,
+    public_url:url||null,
+    status:inventoryChoice==='file'?'connected':'pending',
+    config:{
+      method:mapping.method,
+      simple_label:mapping.label,
+      use:'Lagerbestand, Verfügbarkeit und Lieferfähigkeit',
+      notes:notes||null
+    }
+  }).select('id,name').single();
+
+  if(error){msg.textContent='Fehler: '+error.message;return}
+
+  await writeActivity('Bestandsquelle hinterlegt','data_source',data.id,{name:data.name,type:inventoryChoice});
+  await loadSources();
+  await loadProductSources();
+
+  const result=document.getElementById('inventoryConnectionResult');
+  result.classList.remove('hidden');
+
+  if(inventoryChoice==='file'){
+    result.innerHTML=`<h3 style="margin-top:0">Passt.</h3>
+      <p class="helptext">Für diese Firma ist Datei-Import der schnellste Weg. Du kannst jetzt direkt den Bestand importieren.</p>
+      <button id="openImportFromResultBtn" class="btn primary">Bestand importieren</button>`;
+    document.getElementById('openImportFromResultBtn').onclick=()=>{
+      document.getElementById('inventoryConnectBox').classList.add('hidden');
+      document.getElementById('importProductsBtn').click();
+    };
+  }else{
+    result.innerHTML=`<h3 style="margin-top:0">Quelle gespeichert.</h3>
+      <p class="helptext">AngebotsPilot hat gespeichert, womit die Firma arbeitet. Der nächste technische Schritt ist eine sichere Verbindung zu diesem System. Bis dahin kann der Bestand weiterhin per Import gepflegt werden.</p>
+      <div class="compact-actions"><button id="fallbackImportBtn" class="btn">Vorläufig per Datei importieren</button></div>`;
+    document.getElementById('fallbackImportBtn').onclick=()=>{
+      document.getElementById('inventoryConnectBox').classList.add('hidden');
+      document.getElementById('importProductsBtn').click();
+    };
+  }
+
+  document.getElementById('inventoryChoiceForm').classList.add('hidden');
+}
 
 let importRows=[];
 
@@ -1858,6 +2023,24 @@ document.getElementById('csvFileInput').onchange=(e)=>{
   if(file) handleCsvFile(file);
 };
 document.getElementById('runImportBtn').onclick=runCsvImport;
+
+document.getElementById('connectInventoryBtn').onclick=()=>{
+  resetInventoryConnector();
+  document.getElementById('inventoryConnectBox').classList.remove('hidden');
+};
+document.getElementById('closeInventoryConnectBtn').onclick=()=>{
+  document.getElementById('inventoryConnectBox').classList.add('hidden');
+};
+document.querySelectorAll('.source-choice').forEach(btn=>{
+  btn.onclick=()=>chooseInventorySource(btn.dataset.choice);
+});
+document.getElementById('backInventoryConnectionBtn').onclick=()=>{
+  document.getElementById('inventoryChoiceForm').classList.add('hidden');
+  document.querySelectorAll('.source-choice').forEach(b=>b.classList.remove('on'));
+  inventoryChoice=null;
+};
+document.getElementById('saveInventoryConnectionBtn').onclick=saveSimpleInventoryConnection;
+
 
 
 
