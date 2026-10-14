@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>AngebotsPilot AI 23 – Automation Studio</title>
+<title>AngebotsPilot AI 24 – Datenquellen & Firmenwissen</title>
 <meta name="description" content="AngebotsPilot AI verbindet Anfragen, Angebote, Aufträge, E-Mails, Lagerbestand, Preislisten und Automationen.">
 <style>
 :root{
@@ -79,6 +79,15 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1
 .decision-big.green{background:var(--green-soft);color:#276448}.decision-big.yellow{background:var(--amber-soft);color:#7f5b20}.decision-big.red{background:var(--red-soft);color:#94464d}
 .helptext{font-size:12px;line-height:1.55;color:var(--muted)}
 @media(max-width:900px){.automation-grid,.logic-row{grid-template-columns:1fr}}
+
+
+.source-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.source-card{background:#fbf8f3;border:1px solid var(--line);border-radius:20px;padding:17px}
+.source-card h4{margin:0 0 5px}.source-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.55}
+.source-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.source-type{font-size:11px;font-weight:850;text-transform:uppercase;letter-spacing:.08em;color:#68706a}
+.connector-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:900px){.source-grid,.connector-row{grid-template-columns:1fr}}
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -233,51 +242,145 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1
         </div>
       </div>
 
+      
       <div id="connections" class="view hidden">
         <div class="head">
-          <div><div class="eyebrow">Datenquellen</div><h2>Verbindungen</h2><p>Hier hinterlegt eine Firma, wo AngebotsPilot Informationen finden darf. Die Demo simuliert die Einrichtung – echte Verbindungen benötigen sichere serverseitige Integrationen.</p></div>
-          <button class="btn primary">+ Verbindung hinzufügen</button>
-        </div>
-        <div class="connection-grid">
-          <article class="connection">
-            <h3>Firmen-E-Mail</h3><p>Gmail, Outlook oder ein anderer Anbieter. Eingehende Nachrichten können analysiert und nach Regeln beantwortet werden.</p>
-            <div class="status"><span><span class="dot on"></span> Demo verbunden</span><button class="btn">Verwalten</button></div>
-          </article>
-          <article class="connection">
-            <h3>Eigene Website</h3><p>Öffentliche Leistungs-, Produkt- und FAQ-Seiten als Wissensquelle hinterlegen.</p>
-            <div class="field"><label>Website-Adresse</label><input id="siteUrl" value="https://meinefirma.de"></div>
-            <div class="status" style="margin-top:10px"><span><span class="dot on"></span> Demo aktiv</span><button class="btn" id="saveSite">Speichern</button></div>
-          </article>
-          <article class="connection">
-            <h3>Lager / Warenwirtschaft</h3><p>Bestände, Artikelnummern und Verfügbarkeit für automatische Antworten verwenden.</p>
-            <div class="status"><span><span class="dot"></span> Nicht verbunden</span><button class="btn primary">Verbinden</button></div>
-          </article>
-          <article class="connection">
-            <h3>Lieferantenportal</h3><p>Lieferzeit oder Verfügbarkeit bei externen Lieferanten prüfen, wenn die Integration erlaubt ist.</p>
-            <div class="status"><span><span class="dot"></span> Nicht verbunden</span><button class="btn">Einrichten</button></div>
-          </article>
-          <article class="connection">
-            <h3>Preislisten & Kataloge</h3><p>Eigene Preise, Produkte, Leistungen und Konditionen als Grundlage für Angebote hinterlegen.</p>
-            <div class="status"><span><span class="dot on"></span> Demo-Katalog</span><button class="btn">Öffnen</button></div>
-          </article>
-          <article class="connection">
-            <h3>CRM / Kundendaten</h3><p>Kundenhistorie, Ansprechpartner und laufende Vorgänge an einem Ort zusammenführen.</p>
-            <div class="status"><span><span class="dot"></span> Nicht verbunden</span><button class="btn">Einrichten</button></div>
-          </article>
+          <div>
+            <div class="eyebrow">Datenquellen & Firmenwissen</div>
+            <h2>Alles verbinden, was AngebotsPilot wissen darf.</h2>
+            <p>Firmen können hier ihre Website, Bestands-/Lagerseite, Preislisten, Lieferantenportale, CRM und weitere Datenquellen hinterlegen. Die Verbindungsdaten werden in Supabase gespeichert.</p>
+          </div>
+          <button id="newSourceBtn" class="btn primary">+ Datenquelle hinzufügen</button>
         </div>
 
-        <div class="box" style="margin-top:16px">
-          <h3>Eigene Datenquelle hinzufügen</h3>
+        <div class="stats">
+          <div class="stat"><small>Gesamtquellen</small><b id="sourceStatAll">–</b><span class="badge">Supabase</span></div>
+          <div class="stat"><small>Aktiv</small><b id="sourceStatConnected">–</b><span class="badge">verbunden</span></div>
+          <div class="stat"><small>Prüfung nötig</small><b id="sourceStatPending">–</b><span class="badge amber">offen</span></div>
+          <div class="stat"><small>Fehler</small><b id="sourceStatError">–</b><span class="badge red">prüfen</span></div>
+        </div>
+
+        <div id="sourceBuilder" class="box hidden" style="margin-top:14px">
+          <h3>Neue Datenquelle</h3>
           <div class="formgrid">
-            <div class="field"><label>Name</label><input placeholder="z. B. Ersatzteilportal"></div>
-            <div class="field"><label>Typ</label><select><option>Website / Portal</option><option>API</option><option>Datei / Preisliste</option><option>Datenbank</option></select></div>
-            <div class="full field"><label>Beschreibung</label><textarea placeholder="Welche Informationen soll AngebotsPilot hier finden?"></textarea></div>
+            <div class="field">
+              <label>Name *</label>
+              <input id="sourceName" placeholder="z. B. Firmenwebsite oder Lagerportal">
+            </div>
+            <div class="field">
+              <label>Typ</label>
+              <select id="sourceType">
+                <option value="website">Firmenwebsite</option>
+                <option value="inventory">Lager / Bestandswebsite</option>
+                <option value="supplier">Lieferantenportal</option>
+                <option value="price_list">Preisliste / Produktkatalog</option>
+                <option value="crm">CRM / Kundendaten</option>
+                <option value="email">E-Mail</option>
+                <option value="api">API</option>
+                <option value="file">Datei / CSV</option>
+                <option value="other">Sonstige Quelle</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Verbindungsmethode</label>
+              <select id="sourceMethod">
+                <option value="public_url">Öffentliche Website</option>
+                <option value="api">API</option>
+                <option value="csv">CSV / Export</option>
+                <option value="manual">Manuell gepflegt</option>
+                <option value="oauth">OAuth / Konto verbinden</option>
+                <option value="portal">Geschütztes Portal</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>URL / Adresse</label>
+              <input id="sourceUrl" placeholder="https://firma.de">
+            </div>
+
+            <div class="full field">
+              <label>Welche Informationen darf AngebotsPilot verwenden?</label>
+              <textarea id="sourceUse" placeholder="z. B. Artikelnummern, Bestand, Lieferzeit, Standardpreise, Produktbeschreibungen"></textarea>
+            </div>
+
+            <div class="full field">
+              <label>Interne Hinweise</label>
+              <textarea id="sourceNotes" placeholder="z. B. Preise niemals aus alten PDFs übernehmen. Bei Lieferzeiten älter als 24h manuelle Freigabe."></textarea>
+            </div>
           </div>
-          <button class="btn primary" style="margin-top:12px">Quelle vormerken</button>
+
+          <div class="notice">
+            Keine Passwörter, Secret Keys oder Zugangsdaten hier eintragen. Geschützte Portale werden später über eine sichere serverseitige Verbindung angebunden.
+          </div>
+
+          <div class="source-actions">
+            <button id="saveSourceBtn" class="btn primary">Datenquelle speichern</button>
+            <button id="cancelSourceBtn" class="btn">Abbrechen</button>
+          </div>
+          <div id="sourceMessage" class="sync-note"></div>
+        </div>
+
+        <div class="two">
+          <div class="box">
+            <div class="head" style="margin-bottom:8px">
+              <div>
+                <h3 style="margin:0">Verbundene Datenquellen</h3>
+                <p style="margin-top:4px">Diese Quellen werden pro Firma gespeichert.</p>
+              </div>
+              <button id="refreshSourcesBtn" class="btn">Aktualisieren</button>
+            </div>
+            <div id="sourcesList"><div class="empty-state">Lade Datenquellen …</div></div>
+          </div>
+
+          <div class="box">
+            <h3>Empfohlene Quellen</h3>
+            <div class="source-grid">
+              <div class="source-card">
+                <div class="source-type">Website</div>
+                <h4>Firmenwebsite</h4>
+                <p>Leistungen, Produktinfos, FAQ, Öffnungszeiten und öffentlich sichtbare Inhalte.</p>
+              </div>
+              <div class="source-card">
+                <div class="source-type">Bestand</div>
+                <h4>Lager / Bestandswebsite</h4>
+                <p>Artikelnummern, verfügbare Menge, Reservierungen und Lieferfähigkeit.</p>
+              </div>
+              <div class="source-card">
+                <div class="source-type">Preise</div>
+                <h4>Preislisten & Kataloge</h4>
+                <p>Standardpreise, Produktvarianten, Einheitspreise und Konditionen.</p>
+              </div>
+              <div class="source-card">
+                <div class="source-type">Lieferanten</div>
+                <h4>Lieferantenportale</h4>
+                <p>Externe Verfügbarkeit, Lieferzeiten und alternative Bezugsquellen.</p>
+              </div>
+              <div class="source-card">
+                <div class="source-type">CRM</div>
+                <h4>Kundendaten</h4>
+                <p>Kundenhistorie, Ansprechpartner, offene Vorgänge und Notizen.</p>
+              </div>
+              <div class="source-card">
+                <div class="source-type">E-Mail</div>
+                <h4>Firmenpostfach</h4>
+                <p>Eingehende Nachrichten erkennen, klassifizieren und nach Regeln beantworten.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="box" style="margin-top:14px">
+          <h3>Wie AngebotsPilot später entscheidet</h3>
+          <div class="flow">
+            <div class="flowstep"><b>1. Anfrage</b><p>„Habt ihr 25 Stück Produkt X?“</p></div>
+            <div class="flowstep"><b>2. Quelle wählen</b><p>Lager / Bestandswebsite wird als relevante Quelle erkannt.</p></div>
+            <div class="flowstep"><b>3. Daten prüfen</b><p>Bestand, Preis und Lieferzeit kommen aus verbundenen Systemen.</p></div>
+            <div class="flowstep"><b>4. Regel prüfen</b><p>Automation Studio entscheidet: automatisch, Freigabe oder manuell.</p></div>
+            <div class="flowstep"><b>5. Antwort</b><p>Nur geprüfte Unternehmensdaten werden in der Antwort verwendet.</p></div>
+          </div>
         </div>
       </div>
 
-      
       <div id="automations" class="view hidden">
         <div class="head">
           <div>
@@ -728,6 +831,149 @@ async function loadActivity(){
 }
 
 
+
+function sourceTypeLabel(t){
+  return {
+    website:'Firmenwebsite',
+    inventory:'Lager / Bestandswebsite',
+    supplier:'Lieferantenportal',
+    price_list:'Preisliste / Katalog',
+    crm:'CRM / Kundendaten',
+    email:'E-Mail',
+    api:'API',
+    file:'Datei / CSV',
+    other:'Sonstige Quelle'
+  }[t] || t;
+}
+
+function sourceStatusLabel(s){
+  return {
+    connected:'Aktiv',
+    pending:'Prüfung nötig',
+    disconnected:'Nicht verbunden',
+    error:'Fehler'
+  }[s] || s;
+}
+
+async function loadSources(){
+  if(!currentOrgId) return;
+  const list=document.getElementById('sourcesList');
+
+  const {data,error}=await sb
+    .from('data_sources')
+    .select('*')
+    .eq('organization_id',currentOrgId)
+    .order('created_at',{ascending:false});
+
+  if(error){
+    list.innerHTML=`<div class="empty-state">Fehler: ${esc(error.message)}</div>`;
+    return;
+  }
+
+  const rows=data||[];
+  document.getElementById('sourceStatAll').textContent=rows.length;
+  document.getElementById('sourceStatConnected').textContent=rows.filter(x=>x.status==='connected').length;
+  document.getElementById('sourceStatPending').textContent=rows.filter(x=>x.status==='pending').length;
+  document.getElementById('sourceStatError').textContent=rows.filter(x=>x.status==='error').length;
+
+  if(!rows.length){
+    list.innerHTML='<div class="empty-state">Noch keine Datenquellen hinterlegt.</div>';
+    return;
+  }
+
+  list.innerHTML=rows.map(s=>{
+    const cfg=s.config||{};
+    const badgeClass=s.status==='connected'?'':(s.status==='error'?'red':'amber');
+    return `<div class="source-card" style="margin-top:10px">
+      <div class="source-type">${esc(sourceTypeLabel(s.source_type))}</div>
+      <h4>${esc(s.name)}</h4>
+      <p>${esc(cfg.use || 'Keine Beschreibung hinterlegt.')}</p>
+      ${s.public_url?`<div class="logic-box helptext"><b>Adresse:</b> ${esc(s.public_url)}</div>`:''}
+      <div class="rule-meta">
+        <span class="badge ${badgeClass}">${esc(sourceStatusLabel(s.status))}</span>
+        ${cfg.method?`<span class="pill">${esc(cfg.method)}</span>`:''}
+      </div>
+      ${cfg.notes?`<div class="logic-box helptext">${esc(cfg.notes)}</div>`:''}
+      <div class="source-actions">
+        <button class="btn sourceStatusBtn" data-id="${esc(s.id)}" data-status="${esc(s.status)}">Status ändern</button>
+        <button class="btn danger deleteSourceBtn" data-id="${esc(s.id)}" data-name="${esc(s.name)}">Löschen</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.querySelectorAll('.sourceStatusBtn').forEach(btn=>{
+    btn.onclick=()=>cycleSourceStatus(btn.dataset.id,btn.dataset.status);
+  });
+  document.querySelectorAll('.deleteSourceBtn').forEach(btn=>{
+    btn.onclick=()=>deleteSource(btn.dataset.id,btn.dataset.name);
+  });
+}
+
+async function saveSource(){
+  const name=document.getElementById('sourceName').value.trim();
+  const type=document.getElementById('sourceType').value;
+  const method=document.getElementById('sourceMethod').value;
+  const url=document.getElementById('sourceUrl').value.trim();
+  const use=document.getElementById('sourceUse').value.trim();
+  const notes=document.getElementById('sourceNotes').value.trim();
+  const msg=document.getElementById('sourceMessage');
+
+  if(!name){msg.textContent='Bitte einen Namen eingeben.';return}
+
+  if(url && !/^https?:\/\//i.test(url)){
+    msg.textContent='Bitte eine vollständige URL mit https:// eingeben.';
+    return;
+  }
+
+  const initialStatus=(method==='manual' || method==='csv') ? 'connected' : 'pending';
+
+  msg.textContent='Speichern …';
+  const {data,error}=await sb.from('data_sources').insert({
+    organization_id:currentOrgId,
+    name,
+    source_type:type,
+    public_url:url || null,
+    status:initialStatus,
+    config:{
+      method,
+      use:use || null,
+      notes:notes || null
+    }
+  }).select('id,name').single();
+
+  if(error){msg.textContent='Fehler: '+error.message;return}
+
+  await writeActivity('Datenquelle angelegt','data_source',data.id,{name:data.name,type,method});
+  clearSourceForm();
+  document.getElementById('sourceBuilder').classList.add('hidden');
+  await Promise.all([loadSources(),loadDashboard(),loadActivity()]);
+}
+
+function clearSourceForm(){
+  ['sourceName','sourceUrl','sourceUse','sourceNotes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('sourceType').value='website';
+  document.getElementById('sourceMethod').value='public_url';
+  document.getElementById('sourceMessage').textContent='';
+}
+
+async function deleteSource(id,name){
+  if(!confirm(`Datenquelle „${name}“ wirklich löschen?`)) return;
+  const {error}=await sb.from('data_sources').delete().eq('id',id).eq('organization_id',currentOrgId);
+  if(error){alert('Löschen fehlgeschlagen: '+error.message);return}
+  await writeActivity('Datenquelle gelöscht','data_source',null,{name});
+  await Promise.all([loadSources(),loadDashboard(),loadActivity()]);
+}
+
+async function cycleSourceStatus(id,current){
+  const order=['pending','connected','error','disconnected'];
+  const next=order[(order.indexOf(current)+1)%order.length];
+  const {error}=await sb.from('data_sources').update({status:next}).eq('id',id).eq('organization_id',currentOrgId);
+  if(error){alert(error.message);return}
+  await writeActivity('Status einer Datenquelle geändert','data_source',id,{from:current,to:next});
+  await Promise.all([loadSources(),loadDashboard(),loadActivity()]);
+}
+
+
 function riskForAction(action){
   if(action==='auto_reply') return 'green';
   if(action==='draft_for_approval') return 'yellow';
@@ -977,7 +1223,7 @@ async function openPrivateArea(user){
   app.classList.add('show');
   overlay.classList.remove('show');
 
-  await Promise.all([loadDashboard(),loadCustomers(),loadActivity(),loadRules()]);
+  await Promise.all([loadDashboard(),loadCustomers(),loadActivity(),loadRules(),loadSources()]);
 }
 
 async function showPublicArea(){
@@ -1023,6 +1269,7 @@ function showView(id){
   if(id==='activity') loadActivity();
   if(id==='dashboard') loadDashboard();
   if(id==='automations') loadRules();
+  if(id==='connections') loadSources();
 }
 document.querySelectorAll('.sidebtn[data-view]').forEach(b=>b.onclick=()=>showView(b.dataset.view));
 
@@ -1050,6 +1297,19 @@ document.getElementById('cancelRuleBtn').onclick=()=>{
 document.getElementById('saveRuleBtn').onclick=saveRule;
 document.getElementById('refreshRulesBtn').onclick=loadRules;
 document.getElementById('testRulesBtn').onclick=testRules;
+
+document.getElementById('newSourceBtn').onclick=()=>{
+  clearSourceForm();
+  document.getElementById('sourceBuilder').classList.remove('hidden');
+  document.getElementById('sourceName').focus();
+};
+document.getElementById('cancelSourceBtn').onclick=()=>{
+  clearSourceForm();
+  document.getElementById('sourceBuilder').classList.add('hidden');
+};
+document.getElementById('saveSourceBtn').onclick=saveSource;
+document.getElementById('refreshSourcesBtn').onclick=loadSources;
+
 
 
 document.querySelectorAll('.switch:not(.ruleToggle)').forEach(s=>s.onclick=()=>s.classList.toggle('on'));
