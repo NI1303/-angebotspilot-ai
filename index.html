@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>AngebotsPilot AI 24 – Datenquellen & Firmenwissen</title>
+<title>AngebotsPilot AI 25 – Produkte & Lager</title>
 <meta name="description" content="AngebotsPilot AI verbindet Anfragen, Angebote, Aufträge, E-Mails, Lagerbestand, Preislisten und Automationen.">
 <style>
 :root{
@@ -89,6 +89,15 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1
 .connector-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:900px){.source-grid,.connector-row{grid-template-columns:1fr}}
 
+
+.stock-ok{color:#286447}.stock-low{color:#956921}.stock-zero{color:#99464e}
+.inventory-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.product-card{background:#fbf8f3;border:1px solid var(--line);border-radius:20px;padding:16px}
+.product-card h4{margin:0 0 4px}.product-card p{margin:0;color:var(--muted);font-size:13px;line-height:1.5}
+.qty{font-size:28px;font-weight:900;letter-spacing:-.03em}
+@media(max-width:900px){.inventory-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.inventory-grid{grid-template-columns:1fr}}
+
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -167,6 +176,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1
       <div class="userbox"><b id="who">owner@angebotspilot.demo</b><small id="roleLabel">Inhaber / Administrator</small></div>
       <button class="sidebtn on" data-view="dashboard">Übersicht</button>
       <button class="sidebtn" data-view="customers">Kunden</button>
+      <button class="sidebtn" data-view="inventory">Produkte & Lager</button>
       <button class="sidebtn" data-view="connections">Verbindungen</button>
       <button class="sidebtn" data-view="automations">Automation Studio</button>
       <button class="sidebtn" data-view="mailflow">E-Mail-Autopilot</button>
@@ -243,6 +253,80 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px 8px;border-bottom:1
       </div>
 
       
+
+      <div id="inventory" class="view hidden">
+        <div class="head">
+          <div>
+            <div class="eyebrow">Produkte & Lager</div>
+            <h2>Echter Bestand für automatische Antworten.</h2>
+            <p>Produkte, Preise, verfügbare Mengen, Reservierungen, Mindestbestand und Lieferzeiten werden pro Firma in Supabase gespeichert.</p>
+          </div>
+          <button id="newProductBtn" class="btn primary">+ Produkt anlegen</button>
+        </div>
+
+        <div class="stats">
+          <div class="stat"><small>Produkte</small><b id="prodStatAll">–</b><span class="badge">Supabase</span></div>
+          <div class="stat"><small>Auf Lager</small><b id="prodStatInStock">–</b><span class="badge">verfügbar</span></div>
+          <div class="stat"><small>Unter Mindestbestand</small><b id="prodStatLow">–</b><span class="badge amber">prüfen</span></div>
+          <div class="stat"><small>Nicht verfügbar</small><b id="prodStatZero">–</b><span class="badge red">0 verfügbar</span></div>
+        </div>
+
+        <div id="productBuilder" class="box hidden" style="margin-top:14px">
+          <h3>Produkt anlegen</h3>
+          <div class="formgrid">
+            <div class="field"><label>Produktname *</label><input id="prodName" placeholder="z. B. Produkt X"></div>
+            <div class="field"><label>Artikelnummer / SKU</label><input id="prodSku" placeholder="PX-001"></div>
+            <div class="field"><label>Bestand</label><input id="prodStock" type="number" min="0" step="0.001" value="0"></div>
+            <div class="field"><label>Reserviert</label><input id="prodReserved" type="number" min="0" step="0.001" value="0"></div>
+            <div class="field"><label>Verkaufspreis netto (€)</label><input id="prodSalePrice" type="number" min="0" step="0.01"></div>
+            <div class="field"><label>Einkaufspreis (€)</label><input id="prodPurchasePrice" type="number" min="0" step="0.01"></div>
+            <div class="field"><label>Mindestbestand</label><input id="prodReorder" type="number" min="0" step="0.001" value="0"></div>
+            <div class="field"><label>Lieferzeit in Tagen</label><input id="prodLeadTime" type="number" min="0" step="1"></div>
+            <div class="field"><label>Lieferant</label><input id="prodSupplier" placeholder="z. B. Lieferant GmbH"></div>
+            <div class="field">
+              <label>Datenquelle</label>
+              <select id="prodSource"><option value="">Keine / manuell</option></select>
+            </div>
+            <div class="full field"><label>Beschreibung</label><textarea id="prodDescription" placeholder="Produktbeschreibung oder interne Hinweise"></textarea></div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+            <button id="saveProductBtn" class="btn primary">Produkt speichern</button>
+            <button id="cancelProductBtn" class="btn">Abbrechen</button>
+          </div>
+          <div id="productMessage" class="sync-note"></div>
+        </div>
+
+        <div class="two">
+          <div class="box">
+            <div class="head" style="margin-bottom:8px">
+              <div>
+                <h3 style="margin:0">Produktbestand</h3>
+                <p style="margin-top:4px">Diese Daten kann der Autopilot später für Verfügbarkeitsfragen verwenden.</p>
+              </div>
+              <button id="refreshProductsBtn" class="btn">Aktualisieren</button>
+            </div>
+            <div style="overflow:auto">
+              <table>
+                <thead>
+                  <tr><th>Produkt</th><th>SKU</th><th>Bestand</th><th>Reserviert</th><th>Verfügbar</th><th>Preis</th><th></th></tr>
+                </thead>
+                <tbody id="productsTableBody"></tbody>
+              </table>
+            </div>
+            <div id="productsEmpty" class="empty-state hidden">Noch keine Produkte vorhanden.</div>
+          </div>
+
+          <div class="box">
+            <h3>Bestand testen</h3>
+            <p class="helptext">So ähnlich wird später eine eingehende E-Mail gegen den echten Bestand geprüft.</p>
+            <div class="field" style="margin-top:12px"><label>Produkt / SKU</label><input id="lookupProduct" placeholder="Produkt X oder PX-001"></div>
+            <div class="field" style="margin-top:10px"><label>Benötigte Menge</label><input id="lookupQty" type="number" min="0.001" step="0.001" value="25"></div>
+            <button id="lookupProductBtn" class="btn primary" style="margin-top:12px">Bestand prüfen</button>
+            <div id="lookupResult" class="logic-box" style="margin-top:12px"><span class="helptext">Noch keine Prüfung durchgeführt.</span></div>
+          </div>
+        </div>
+      </div>
+
       <div id="connections" class="view hidden">
         <div class="head">
           <div>
@@ -832,6 +916,204 @@ async function loadActivity(){
 
 
 
+
+async function loadProductSources(){
+  if(!currentOrgId) return;
+  const sel=document.getElementById('prodSource');
+  if(!sel) return;
+
+  const {data}=await sb
+    .from('data_sources')
+    .select('id,name,source_type')
+    .eq('organization_id',currentOrgId)
+    .order('name');
+
+  sel.innerHTML='<option value="">Keine / manuell</option>'+
+    (data||[]).map(s=>`<option value="${esc(s.id)}">${esc(s.name)} (${esc(sourceTypeLabel(s.source_type))})</option>`).join('');
+}
+
+async function loadProducts(){
+  if(!currentOrgId) return;
+
+  const body=document.getElementById('productsTableBody');
+  const empty=document.getElementById('productsEmpty');
+
+  body.innerHTML='<tr><td colspan="7">Lade Produkte …</td></tr>';
+  empty.classList.add('hidden');
+
+  const {data,error}=await sb
+    .from('products')
+    .select('*')
+    .eq('organization_id',currentOrgId)
+    .eq('active',true)
+    .order('name');
+
+  if(error){
+    body.innerHTML=`<tr><td colspan="7">Fehler: ${esc(error.message)}</td></tr>`;
+    return;
+  }
+
+  const rows=data||[];
+  const available=p=>Number(p.stock_qty||0)-Number(p.reserved_qty||0);
+
+  document.getElementById('prodStatAll').textContent=rows.length;
+  document.getElementById('prodStatInStock').textContent=rows.filter(p=>available(p)>0).length;
+  document.getElementById('prodStatLow').textContent=rows.filter(p=>available(p)>0 && available(p)<=Number(p.reorder_level||0)).length;
+  document.getElementById('prodStatZero').textContent=rows.filter(p=>available(p)<=0).length;
+
+  if(!rows.length){
+    body.innerHTML='';
+    empty.classList.remove('hidden');
+    return;
+  }
+
+  body.innerHTML=rows.map(p=>{
+    const av=available(p);
+    const cls=av<=0?'stock-zero':(av<=Number(p.reorder_level||0)?'stock-low':'stock-ok');
+    return `<tr>
+      <td><b>${esc(p.name)}</b><div class="helptext">${esc(p.supplier_name||'')}</div></td>
+      <td>${esc(p.sku||'–')}</td>
+      <td>${Number(p.stock_qty||0).toLocaleString('de-DE')}</td>
+      <td>${Number(p.reserved_qty||0).toLocaleString('de-DE')}</td>
+      <td><b class="${cls}">${av.toLocaleString('de-DE')}</b></td>
+      <td>${p.sale_price!=null?Number(p.sale_price).toLocaleString('de-DE',{style:'currency',currency:p.currency||'EUR'}):'–'}</td>
+      <td>
+        <div class="customer-actions">
+          <button class="btn stockAdjustBtn" data-id="${esc(p.id)}" data-name="${esc(p.name)}" data-stock="${esc(p.stock_qty)}">Bestand</button>
+          <button class="btn danger deleteProductBtn" data-id="${esc(p.id)}" data-name="${esc(p.name)}">Löschen</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  document.querySelectorAll('.stockAdjustBtn').forEach(btn=>{
+    btn.onclick=()=>adjustStock(btn.dataset.id,btn.dataset.name,btn.dataset.stock);
+  });
+  document.querySelectorAll('.deleteProductBtn').forEach(btn=>{
+    btn.onclick=()=>deleteProduct(btn.dataset.id,btn.dataset.name);
+  });
+}
+
+function clearProductForm(){
+  ['prodName','prodSku','prodSalePrice','prodPurchasePrice','prodLeadTime','prodSupplier','prodDescription'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('prodStock').value='0';
+  document.getElementById('prodReserved').value='0';
+  document.getElementById('prodReorder').value='0';
+  document.getElementById('prodSource').value='';
+  document.getElementById('productMessage').textContent='';
+}
+
+async function saveProduct(){
+  const name=document.getElementById('prodName').value.trim();
+  const msg=document.getElementById('productMessage');
+  if(!name){msg.textContent='Bitte einen Produktnamen eingeben.';return}
+
+  const stock=Number(document.getElementById('prodStock').value||0);
+  const reserved=Number(document.getElementById('prodReserved').value||0);
+  if(reserved>stock){msg.textContent='Reserviert darf nicht größer als der Bestand sein.';return}
+
+  const payload={
+    organization_id:currentOrgId,
+    source_id:document.getElementById('prodSource').value || null,
+    sku:document.getElementById('prodSku').value.trim() || null,
+    name,
+    description:document.getElementById('prodDescription').value.trim() || null,
+    stock_qty:stock,
+    reserved_qty:reserved,
+    purchase_price:document.getElementById('prodPurchasePrice').value ? Number(document.getElementById('prodPurchasePrice').value) : null,
+    sale_price:document.getElementById('prodSalePrice').value ? Number(document.getElementById('prodSalePrice').value) : null,
+    currency:'EUR',
+    reorder_level:Number(document.getElementById('prodReorder').value||0),
+    lead_time_days:document.getElementById('prodLeadTime').value ? Number(document.getElementById('prodLeadTime').value) : null,
+    supplier_name:document.getElementById('prodSupplier').value.trim() || null
+  };
+
+  msg.textContent='Speichern …';
+  const {data,error}=await sb.from('products').insert(payload).select('id,name').single();
+
+  if(error){msg.textContent='Fehler: '+error.message;return}
+
+  await writeActivity('Produkt angelegt','product',data.id,{name:data.name,stock});
+  clearProductForm();
+  document.getElementById('productBuilder').classList.add('hidden');
+  await Promise.all([loadProducts(),loadDashboard(),loadActivity()]);
+}
+
+async function adjustStock(id,name,currentStock){
+  const input=prompt(`Neuen Gesamtbestand für „${name}“ eingeben:`, String(currentStock));
+  if(input===null) return;
+  const next=Number(String(input).replace(',','.'));
+  if(!Number.isFinite(next) || next<0){alert('Bitte eine gültige Zahl ab 0 eingeben.');return}
+
+  const {data:product,error:readError}=await sb.from('products').select('stock_qty,reserved_qty').eq('id',id).single();
+  if(readError){alert(readError.message);return}
+  if(next<Number(product.reserved_qty||0)){alert('Der Bestand darf nicht kleiner als die reservierte Menge sein.');return}
+
+  const old=Number(product.stock_qty||0);
+  const {error}=await sb.from('products').update({stock_qty:next,updated_at:new Date().toISOString()}).eq('id',id).eq('organization_id',currentOrgId);
+  if(error){alert(error.message);return}
+
+  await sb.from('stock_movements').insert({
+    organization_id:currentOrgId,
+    product_id:id,
+    change_qty:next-old,
+    movement_type:'manual_adjustment',
+    note:'Manuelle Bestandskorrektur',
+    actor_user_id:currentUser.id
+  });
+
+  await writeActivity('Bestand geändert','product',id,{name,from:old,to:next});
+  await Promise.all([loadProducts(),loadDashboard(),loadActivity()]);
+}
+
+async function deleteProduct(id,name){
+  if(!confirm(`Produkt „${name}“ wirklich löschen?`)) return;
+  const {error}=await sb.from('products').delete().eq('id',id).eq('organization_id',currentOrgId);
+  if(error){alert(error.message);return}
+  await writeActivity('Produkt gelöscht','product',null,{name});
+  await Promise.all([loadProducts(),loadDashboard(),loadActivity()]);
+}
+
+async function lookupInventory(){
+  const q=document.getElementById('lookupProduct').value.trim();
+  const qty=Number(document.getElementById('lookupQty').value||0);
+  const result=document.getElementById('lookupResult');
+
+  if(!q || qty<=0){
+    result.innerHTML='<span class="helptext">Bitte Produkt/SKU und eine Menge eingeben.</span>';
+    return;
+  }
+
+  const {data,error}=await sb
+    .from('products')
+    .select('*')
+    .eq('organization_id',currentOrgId)
+    .eq('active',true)
+    .or(`name.ilike.%${q.replace(/[%_,]/g,'')}%,sku.ilike.%${q.replace(/[%_,]/g,'')}%`)
+    .limit(1)
+    .maybeSingle();
+
+  if(error || !data){
+    result.innerHTML='<b class="stock-zero">Produkt nicht gefunden.</b>';
+    return;
+  }
+
+  const available=Number(data.stock_qty||0)-Number(data.reserved_qty||0);
+  const enough=available>=qty;
+  const price=data.sale_price!=null ? Number(data.sale_price).toLocaleString('de-DE',{style:'currency',currency:data.currency||'EUR'}) : 'kein Standardpreis hinterlegt';
+
+  result.innerHTML=`
+    <b>${esc(data.name)}${data.sku?` · ${esc(data.sku)}`:''}</b>
+    <div style="margin-top:8px">Verfügbar: <b class="${enough?'stock-ok':'stock-zero'}">${available.toLocaleString('de-DE')}</b></div>
+    <div>Benötigt: ${qty.toLocaleString('de-DE')}</div>
+    <div>Standardpreis: ${price}</div>
+    <div>Lieferzeit: ${data.lead_time_days!=null?esc(data.lead_time_days)+' Tage':'nicht hinterlegt'}</div>
+    <div class="decision-big ${enough?'green':'yellow'}" style="margin-top:10px">
+      ${enough?'Menge verfügbar – Standardantwort möglich.':'Nicht ausreichend verfügbar – Lieferant/Manuelle Prüfung nötig.'}
+    </div>`;
+}
+
+
 function sourceTypeLabel(t){
   return {
     website:'Firmenwebsite',
@@ -1223,7 +1505,7 @@ async function openPrivateArea(user){
   app.classList.add('show');
   overlay.classList.remove('show');
 
-  await Promise.all([loadDashboard(),loadCustomers(),loadActivity(),loadRules(),loadSources()]);
+  await Promise.all([loadDashboard(),loadCustomers(),loadActivity(),loadRules(),loadSources(),loadProducts(),loadProductSources()]);
 }
 
 async function showPublicArea(){
@@ -1270,6 +1552,7 @@ function showView(id){
   if(id==='dashboard') loadDashboard();
   if(id==='automations') loadRules();
   if(id==='connections') loadSources();
+  if(id==='inventory'){loadProducts();loadProductSources();}
 }
 document.querySelectorAll('.sidebtn[data-view]').forEach(b=>b.onclick=()=>showView(b.dataset.view));
 
@@ -1309,6 +1592,21 @@ document.getElementById('cancelSourceBtn').onclick=()=>{
 };
 document.getElementById('saveSourceBtn').onclick=saveSource;
 document.getElementById('refreshSourcesBtn').onclick=loadSources;
+
+document.getElementById('newProductBtn').onclick=()=>{
+  clearProductForm();
+  document.getElementById('productBuilder').classList.remove('hidden');
+  loadProductSources();
+  document.getElementById('prodName').focus();
+};
+document.getElementById('cancelProductBtn').onclick=()=>{
+  clearProductForm();
+  document.getElementById('productBuilder').classList.add('hidden');
+};
+document.getElementById('saveProductBtn').onclick=saveProduct;
+document.getElementById('refreshProductsBtn').onclick=loadProducts;
+document.getElementById('lookupProductBtn').onclick=lookupInventory;
+
 
 
 
